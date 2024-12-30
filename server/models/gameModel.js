@@ -1,17 +1,16 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 
-
-const gameSchema = mongoose.Schema({
+const gameSchema = new mongoose.Schema({
     creator_id: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: [true, 'User is required']
+        required: [true, 'Creator ID is required!']
     },
     title: {
         type: String,
         required: [true, "Title is required!"],
-        minlength: [2, "title must be at least 2 characters long!"],
-        maxlength: [50, "title cannot exceed 50 characters!"]
+        minlength: [2, "Title must be at least 2 characters long!"],
+        maxlength: [50, "Title cannot exceed 50 characters!"]
     },
     maxUsers: {
         type: Number,
@@ -21,10 +20,15 @@ const gameSchema = mongoose.Schema({
         type: Number,
         required: [true, "Game code is required!"]
     },
+    question_ids: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'Question', 
+        default: [] 
+    },
     is_active: {
         type: Boolean,
-        default: true,
+        default: true
     },
-}, { timestamps: true })
+}, { timestamps: true });
 
-module.exports = mongoose.model('game', gameSchema)
+module.exports = mongoose.model('Game', gameSchema);
