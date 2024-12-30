@@ -1,7 +1,9 @@
-const express = require('express');
 require('dotenv').config();
+const express = require('express');
+const connectDB = require('./config/dbConnection')
 
 
+connectDB() //connect database
 const app = express();
 
 //middleware
