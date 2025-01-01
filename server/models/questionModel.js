@@ -13,7 +13,7 @@ const questionSchema = new mongoose.Schema({
         min: [1, "Time limit must be at least 1 second."]
     },
     option: {
-        type: [String], // Array of strings for options
+        type: [String], //  options
         validate: {
             validator: function (v) {
                 return Array.isArray(v) && v.length > 0;
@@ -22,8 +22,12 @@ const questionSchema = new mongoose.Schema({
         }
     },
     correctOptionId: {
-        type: mongoose.Types.ObjectId,
-        default: null,
+        type: String,
+        required: [true, "Correct option is required!"]
+    },
+    creator_id: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     }
 });
 
