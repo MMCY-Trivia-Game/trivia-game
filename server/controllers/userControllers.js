@@ -196,17 +196,3 @@ exports.activateUser = async (req, res, next) => {
     next(error);
   }
 };
-
-// export {
-//   registerUser,
-//   loginUser,
-//   logoutUser,
-//   getAllUsers,
-//   getUserById,
-//   refreshToken,
-//   updateUserProfile,
-//   promoteUserToAdmin,
-//   demoteUserToCreator,
-//   suspendUser,
-//   activateUser,
-// };
