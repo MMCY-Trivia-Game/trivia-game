@@ -140,15 +140,3 @@ exports.clearQuestions = async (req, res, next) => {
     next(error);
   }
 };
-
-// export {
-//   createGame,
-//   getAllGames,
-//   getGameById,
-//   getGamesByCreatorId,
-//   updateGame,
-//   activateGame,
-//   deactivateGame,
-//   addQuestion,
-//   clearQuestions,
-// };
