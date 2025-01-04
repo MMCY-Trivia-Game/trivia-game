@@ -12,6 +12,22 @@ const gameSchema = new mongoose.Schema({
         minlength: [2, "Title must be at least 2 characters long!"],
         maxlength: [50, "Title cannot exceed 50 characters!"]
     },
+    category: {
+        type: String,
+        required: [true, "Category is required!"],
+        enum: [
+            'General Knowledge',
+            'Technology',
+            'History',
+            'Geography',
+            'Entertainment',
+            'Sports',
+            'Culture',
+            'Food and Drink',
+            'Mythology',
+            'Fun'
+        ]
+    },
     maxUsers: {
         type: Number,
         default: 2
@@ -22,8 +38,8 @@ const gameSchema = new mongoose.Schema({
     },
     question_ids: {
         type: [mongoose.Schema.Types.ObjectId],
-        ref: 'Question', 
-        default: [] 
+        ref: 'Question',
+        default: []
     },
     is_active: {
         type: Boolean,
