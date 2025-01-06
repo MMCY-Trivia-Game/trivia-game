@@ -35,12 +35,18 @@ app.use('/api/users', userRoutes);
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
 
-  socket.on('joinGame', (gameId) => {
-    socket.join(`game:${gameId}`);
+  socket.on('joinGame', (gameId, userName) => {
+    socket.join(`${gameId}`);
+    io.to(gameCode).emit('playerJoined', { playerId: socket.id, userName });
   });
 
   socket.on('leaderboardUpdate', (data) => {
     io.to(`game:${data.gameId}`).emit('leaderboard:update', data);
+  });
+
+  socket.on('answerQuestion', ({ gameCode, playerId, userName, answer }) => {
+    console.log(`Player ${playerId} answered question in game ${gameCode}`);
+    io.to(gameCode).emit('playerAnswered', { playerId, userName, answer });
   });
 
   socket.on('disconnect', () => {
