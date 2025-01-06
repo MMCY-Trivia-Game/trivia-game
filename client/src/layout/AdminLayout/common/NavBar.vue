@@ -1,6 +1,6 @@
 <template>
     <nav
-        class="fixed top-0 z-50 w-full bg-white border-b-2 border-gray-200 dark:bg-gray-800 dark:border-gray-700 border-dashed ">
+        class="fixed top-0 z-50 w-full bg-primary border-b-2 border-gray-200 dark:bg-gray-800 dark:border-gray-700 border-dashed ">
         <div class="px-3 py-3 lg:px-5 lg:pl-3">
             <div class="flex items-center justify-between">
                 <div class="flex items-center justify-start rtl:justify-end">
@@ -15,10 +15,10 @@
                             </path>
                         </svg>
                     </button>
-                    <a href="https://flowbite.com" class="flex ms-2 md:me-24">
+                    <router-link :to="{ name: 'dashboard' }" class=" flex ms-2 md:me-24">
                         <img :src="logo" class="h-8 me-3" alt="Logo" />
 
-                    </a>
+                    </router-link>
                 </div>
                 <div class="flex items-center">
                     <div class="flex items-center ms-3">
@@ -34,27 +34,18 @@
                             id="dropdown-user">
                             <div class="px-4 py-3" role="none">
                                 <p class="text-sm text-gray-900 dark:text-white" role="none">
-                                    Neil Sims
+                                    Mikiyas Mebrate
                                 </p>
                                 <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none">
-                                    neil.sims@flowbite.com
+                                    mike@gmail.com
                                 </p>
                             </div>
                             <ul class="py-1" role="none">
                                 <li>
-                                    <a href="#"
+                                    <router-link :to="{ name: 'setting' }"
                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                                        role="menuitem">Dashboard</a>
-                                </li>
-                                <li>
-                                    <a href="#"
-                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                                        role="menuitem">Settings</a>
-                                </li>
-                                <li>
-                                    <a href="#"
-                                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                                        role="menuitem">Earnings</a>
+                                        role="menuitem">Settings
+                                    </router-link>
                                 </li>
                                 <li>
                                     <a href="#"

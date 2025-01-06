@@ -4,14 +4,37 @@ const routes = [
     {
         path: '/admin',
         name: 'adminLayout',
-        component: () => import('@/layout/AdminLayout/AdminLayout.vue')
+        redirect: 'admin/dashboard',
+        component: () => import('@/layout/AdminLayout/AdminLayout.vue'),
+        children: [
+            {
+                path: 'dashboard',
+                name: 'dashboard',
+                component: () => import('@/pages/admin/Dashboard.vue')
+            },
+            {
+                path: 'users',
+                name: 'users',
+                component: () => import('@/pages/admin/Users.vue')
+            },
+            {
+                path: 'games',
+                name: 'games',
+                component: () => import('@/pages/admin/Games.vue')
+            },
+            {
+                path: 'setting',
+                name: 'setting',
+                component: () => import('@/pages/admin/Setting.vue')
+            }
+        ]
     }
 ]
 
 const router = createRouter({
     history: createWebHistory(),
     routes,
-    linkActiveClass: 'text-primary'
+    linkActiveClass: 'text-highlight'
 })
 
 

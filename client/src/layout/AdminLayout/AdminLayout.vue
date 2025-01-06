@@ -1,11 +1,13 @@
-<template>
-    <NavBar />
-    <SideBar />
-    <div class="p-4 sm:ml-64">
-        <div class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700 mt-14">
-            <!--main content start-->
-            <router-view></router-view>
-            <!--main content end-->
+<template >
+    <div class="bg-primary text-white min-h-screen">
+        <NavBar />
+        <SideBar />
+        <div class="p-4 sm:ml-64 ">
+            <div class="p-4 mt-14">
+                <!--main content start-->
+                <router-view></router-view>
+                <!--main content end-->
+            </div>
         </div>
     </div>
 </template>
@@ -24,3 +26,5 @@ onMounted(() => {
 })
 
 </script>
+
+<style scoped></style>
