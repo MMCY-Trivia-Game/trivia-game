@@ -1,3 +1,6 @@
 <template>
-    <router-view />
+  <PlayerGame />
+  <router-view />
 </template>
+<script setup>
+</script>
