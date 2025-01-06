@@ -21,8 +21,8 @@
 
 <script  setup>
 import { FwbModal, FwbButton } from 'flowbite-vue'
-import EditUserForm from '@/components/forms/EditUserForm.vue'
-import Button from '@/components/ui/PrimaryButton.vue'
+import EditUserForm from '@/components/admin-component/forms/EditUserForm.vue'
+import Button from '@/components/admin-component/ui/PrimaryButton.vue'
 const { isShowModal } = defineProps(['isShowModal'])
 const emit = defineEmits(['close', 'submit']);
 

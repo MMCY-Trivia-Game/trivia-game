@@ -86,10 +86,10 @@ import {
     FwbTableRow,
     FwbPagination,
 } from 'flowbite-vue'
-import ModalEdit from '@/components/modal/ModalEdit.vue'
+import ModalEdit from '@/components/admin-component/modal/ModalEdit.vue'
 import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/vue/24/solid';
-import Button from '@/components/ui/PrimaryButton.vue'
+import Button from '@/components/admin-component/ui/PrimaryButton.vue'
 
 
 

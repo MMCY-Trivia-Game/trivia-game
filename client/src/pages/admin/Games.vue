@@ -33,11 +33,11 @@
 <script setup>
 import { ref } from 'vue';
 
-import GameListCard from '@/components/ui/GameListCard.vue';
+import GameListCard from '@/components/admin-component/ui/GameListCard.vue';
 import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
-import Button from '@/components/ui/PrimaryButton.vue'
+import Button from '@/components/admin-component/ui/PrimaryButton.vue'
 import { FwbButton } from 'flowbite-vue'
-import GameDetailModal from '@/components/modal/GameDetailModal.vue'
+import GameDetailModal from '@/components/admin-component/modal/GameDetailModal.vue'
 
 import arcadeImage from '@/assets/gameIcons/arcade.png'
 import controllerImage from '@/assets/gameIcons/controller.png'

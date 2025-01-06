@@ -23,9 +23,9 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-import GameDeleteModal from '@/components/modal/GameDeleteModal.vue'
+import GameDeleteModal from '@/components/admin-component/modal/GameDeleteModal.vue'
 import { FwbButton, FwbModal } from 'flowbite-vue'
-import GameForm from "@/components/forms/GameForm.vue"
+import GameForm from "@/components/admin-component/forms/GameForm.vue"
 const { isShowModal } = defineProps(['isShowModal'])
 const emit = defineEmits(['close', 'submit']);
 

@@ -28,8 +28,8 @@
 </template>
 
 <script setup>
-import DashboardCard from '@/components/ui/DashboardCard.vue'
-import DashboardGameStatus from '@/components/ui/DashboardGameStatus.vue'
+import DashboardCard from '@/components/admin-component/ui/DashboardCard.vue'
+import DashboardGameStatus from '@/components/admin-component/ui/DashboardGameStatus.vue'
 import { ref } from 'vue'
 import { PlayIcon, Squares2X2Icon, QuestionMarkCircleIcon, UserPlusIcon, RectangleGroupIcon } from '@heroicons/vue/24/solid';
 import ResponseImage from '@/assets/Responsive-rafiki.svg'
