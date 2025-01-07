@@ -1,3 +1,9 @@
 <template>
-    <h1>Setting</h1>
+    <div>
+        <EditProfileForm />
+    </div>
 </template>
+
+<script setup>
+import EditProfileForm from '@/components/admin-component/forms/EditProfileForm.vue';
+</script>
