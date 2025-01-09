@@ -11,6 +11,11 @@ const leaderboardSchema = new mongoose.Schema({
         ref: 'User',
         required: [true, "User ID is required!"]
     },
+    round: {
+        type: Number,
+        required: [true, "Round is required!"],
+        min: [1, "Round must be greater than or equal to 1"]
+    },
     score: {
         type: Number,
         required: [true, "Score is required!"],

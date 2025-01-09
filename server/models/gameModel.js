@@ -25,7 +25,8 @@ const gameSchema = new mongoose.Schema({
             'Culture',
             'Food and Drink',
             'Mythology',
-            'Fun'
+            'Fun',
+            'Others'
         ]
     },
     maxUsers: {
