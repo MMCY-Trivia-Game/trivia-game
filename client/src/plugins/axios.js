@@ -18,7 +18,7 @@ api.interceptors.request.use(
                 authStore.logout();
                 throw new axios.Cancel("Token expired, logging out...");
             }
-            config.headers.Authorization = `Bearer ${authStore.token}`;
+            config.headers.Authorization = `Bearer ${authStore.accessToken}`;
         }
         return config;
     },

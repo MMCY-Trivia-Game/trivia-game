@@ -4,7 +4,7 @@ import { jwtDecode } from "jwt-decode";
 
 export const useAuthStore = defineStore('auth', {
     state: () => ({
-        user: null,
+        user: jwtDecode(localStorage.getItem('accessToken')) || null,
         accessToken: localStorage.getItem('accessToken') || null,
         refreshToken: localStorage.getItem('refreshToken') || null,
         isLoading: false,

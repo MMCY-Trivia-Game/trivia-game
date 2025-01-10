@@ -24,7 +24,7 @@
         </div>
 
 
-        <fwb-table hoverable>
+        <fwb-table class="mt-3" hoverable>
             <fwb-table-head>
                 <fwb-table-head-cell>#</fwb-table-head-cell>
                 <fwb-table-head-cell>First Name</fwb-table-head-cell>
@@ -38,14 +38,15 @@
             </fwb-table-head>
             <fwb-table-body>
 
-                <fwb-table-row>
+                <fwb-table-row v-for="user in userStore.users">
                     <fwb-table-cell>1</fwb-table-cell>
-                    <fwb-table-cell>Abel</fwb-table-cell>
-                    <fwb-table-cell>Yohannes</fwb-table-cell>
-                    <fwb-table-cell>abel@gmail.ccom</fwb-table-cell>
-                    <fwb-table-cell>Admin</fwb-table-cell>
+                    <fwb-table-cell>{{ user.first_name }}</fwb-table-cell>
+                    <fwb-table-cell>{{ user.last_name }}</fwb-table-cell>
+                    <fwb-table-cell>{{ user.email }}</fwb-table-cell>
+                    <fwb-table-cell>{{ user.role }}</fwb-table-cell>
                     <fwb-table-cell>
-                        <CheckCircleIcon class="h-6 w-6 text-green-500" />
+                        <CheckCircleIcon v-if="user.is_active" class="h-6 w-6 text-green-500" />
+                        <XCircleIcon v-else class="h-6 w-6 text-highlight" />
                     </fwb-table-cell>
                     <fwb-table-cell>
                         <fwb-a @click="toggleModal" href="#">
@@ -53,25 +54,6 @@
                         </fwb-a>
                     </fwb-table-cell>
                 </fwb-table-row>
-
-
-                <fwb-table-row>
-                    <fwb-table-cell>2</fwb-table-cell>
-                    <fwb-table-cell>Kaleab</fwb-table-cell>
-                    <fwb-table-cell>Hegie</fwb-table-cell>
-                    <fwb-table-cell>kal@gmail.ccom</fwb-table-cell>
-                    <fwb-table-cell>Creator</fwb-table-cell>
-                    <fwb-table-cell>
-                        <XCircleIcon class="h-6 w-6 text-highlight" />
-                    </fwb-table-cell>
-                    <fwb-table-cell>
-                        <fwb-a @click="toggleModal" href="#">
-                            Edit
-                        </fwb-a>
-                    </fwb-table-cell>
-                </fwb-table-row>
-
-
 
             </fwb-table-body>
         </fwb-table>
@@ -85,7 +67,7 @@
 
 <script setup>
 
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import {
     FwbA,
     FwbTable,
@@ -101,11 +83,15 @@ import ModalEdit from '@/components/admin-component/modal/ModalEdit.vue'
 import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/vue/24/solid';
 import Button from '@/components/admin-component/ui/PrimaryButton.vue'
+import { useUsersStore } from '@/stores/admin/userStore.js';
 
-
-
+const userStore = useUsersStore()
 const currentPage = ref(1)
 const isShowModal = ref(false)
+
+onMounted(async () => {
+    await userStore.fetchUsers()
+})
 
 const toggleModal = () => {
     isShowModal.value = !isShowModal.value
