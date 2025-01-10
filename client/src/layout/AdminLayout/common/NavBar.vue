@@ -48,9 +48,10 @@
                                     </router-link>
                                 </li>
                                 <li>
-                                    <a href="#"
+                                    <router-link @click="authStore.logout" :to="{ name: 'login' }"
                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                                        role="menuitem">Sign out</a>
+                                        role="menuitem">Logout
+                                    </router-link>
                                 </li>
                             </ul>
                         </div>
@@ -64,4 +65,8 @@
 <script setup>
 import logo from '@/assets/logo-highlight.png'
 import { FwbAvatar } from 'flowbite-vue'
+import { useAuthStore } from '@/stores/auth/auth.js';
+
+const authStore = useAuthStore()
+
 </script>
