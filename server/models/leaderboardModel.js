@@ -1,43 +1,36 @@
 const mongoose = require('mongoose');
 
-const leaderboardSchema = new mongoose.Schema({
+const leaderboardSchema = new mongoose.Schema(
+  {
     game_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Game',
-        required: [true, "Game ID is required!"]
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Game',
+      required: [true, 'Game ID is required!'],
     },
-    user_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: [true, "User ID is required!"]
+    user_name: {
+      type: String,
+      required: [true, 'User Name is required!'],
     },
     round: {
-        type: Number,
-        required: [true, "Round is required!"],
-        min: [1, "Round must be greater than or equal to 1"]
+      type: Number,
+      required: [true, 'Round is required!'],
+      min: [1, 'Round must be greater than or equal to 1'],
     },
     score: {
-        type: Number,
-        required: [true, "Score is required!"],
-        min: [0, "Score cannot be negative!"],
-        default: 0
-    },
-    response_time: {
-        type: Number,
-        required: [true, "Response time is required!"],
-        min: [0, "Response time cannot be negative!"]
+      type: Number,
+      required: [true, 'Score is required!'],
+      min: [0, 'Score cannot be negative!'],
+      default: 0,
     },
     rank: {
-        type: Number,
-        default: 0
+      type: Number,
+      default: 0,
     },
-    is_active: {
-        type: Boolean,
-        default: true
-    }
-}, {
-    timestamps: true
-});
+  },
+  {
+    timestamps: true,
+  }
+);
 
 // Index for  querying
 leaderboardSchema.index({ game_id: 1, user_id: 1 });

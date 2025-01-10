@@ -6,6 +6,7 @@ const props = defineProps({
 
 <template>
   <div class="mb-8 bg-secondary p-6 rounded-lg">
+    <h1>Question 1</h1>
     <p class="text-2xl font-semibold">{{ question.text }}</p>
     <ul class="mt-4 pl-4">
       <li

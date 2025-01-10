@@ -87,50 +87,53 @@ onMounted(() => {
 </script>
 
 <template>
-  <div
-    class="min-h-screen bg-primary text-white flex flex-col items-center justify-center"
-  >
-    <header class="text-center mb-6">
-      <h1 class="text-3xl font-bold text-accent">{{ gameDetails.title }}</h1>
-    </header>
+  <div class="min-h-screen bg-primary text-white">
+    <div class="max-w-screen-xl mx-auto p-6">
+      <header class="text-center mb-6">
+        <h1 class="text-3xl font-bold text-white">{{ gameDetails.title }}</h1>
+      </header>
 
-    <div v-if="isCountdownRunning" class="relative">
-      <p
-        class="text-9xl font-extrabold text-accent animate-bounce transition-transform transform scale-100 duration-500"
+      <div
+        v-if="isCountdownRunning"
+        class="absolute top-1/2 left-1/2 translation -translate-y-1/2 -translate-x-1/2"
       >
-        {{ countdown }}
-      </p>
-    </div>
-
-    <div v-if="isQuestionActive" class="w-full px-6">
-      <div class="text-center mb-6">
-        <p class="text-lg font-semibold">Time Remaining</p>
-        <p class="text-4xl font-bold">{{ formattedTime }}</p>
+        <p
+          class="text-9xl font-extrabold text-white animate-bounce transition-transform transform scale-100 duration-500"
+        >
+          {{ countdown }}
+        </p>
       </div>
 
-      <QuestionWithoutAnswerCard :question="gameDetails.question" />
+      <div v-if="isQuestionActive" class="w-full px-6">
+        <div class="text-center mb-6">
+          <p class="text-lg font-semibold">Time Remaining</p>
+          <p class="text-4xl font-bold">{{ formattedTime }}</p>
+        </div>
 
-      <div class="mt-8">
-        <p class="text-lg font-semibold">Players Answered</p>
-        <p class="text-4xl font-bold">
-          {{ answeredPlayers }} / {{ gameDetails.players.length }}
-        </p>
+        <QuestionWithoutAnswerCard :question="gameDetails.question" />
 
-        <ul class="mt-4 space-y-2">
-          <li
-            v-for="player in gameDetails.players"
-            :key="player.name"
-            class="flex justify-between items-center bg-secondary px-4 py-3 rounded-lg"
-          >
-            <p class="text-lg">{{ player.name }}</p>
-            <p
-              class="text-lg font-medium"
-              :class="player.answered ? 'text-green-500' : 'text-red-500'"
+        <div class="mt-8">
+          <p class="text-lg font-semibold">Players Answered</p>
+          <p class="text-4xl font-bold">
+            {{ answeredPlayers }} / {{ gameDetails.players.length }}
+          </p>
+
+          <ul class="mt-4 space-y-2">
+            <li
+              v-for="player in gameDetails.players"
+              :key="player.name"
+              class="flex justify-between items-center bg-secondary px-4 py-3 rounded-lg"
             >
-              {{ player.answered ? "Answered" : "Not Answered" }}
-            </p>
-          </li>
-        </ul>
+              <p class="text-lg">{{ player.name }}</p>
+              <p
+                class="text-lg font-medium"
+                :class="player.answered ? 'text-green-500' : 'text-red-500'"
+              >
+                {{ player.answered ? "Answered" : "Not Answered" }}
+              </p>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>
