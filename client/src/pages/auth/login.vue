@@ -1,6 +1,7 @@
 <template>
     <div class="w-full bg-secondary flex flex-col md:flex-row items-center justify-center h-screen">
         <div class="flex flex-col md:flex-row w-11/12 bg-white md:w-3/5 shadow-xl  p-20 rounded-2xl">
+
             <!--Vector animation start-->
             <div class="hidden md:block md:w-1/2">
                 <img :src="loginSVG" alt="Login SVG" />
@@ -16,20 +17,19 @@
             <div class="md:w-1/2 text-white">
                 <div>
                     <h2 class="text-2xl font-semibold text-center mb-6">Login</h2>
-
                     <!-- Login Form -->
-                    <form>
+                    <form @submit="onSubmit">
                         <div class="mb-4">
-
-
                             <!-- Email Input -->
-                            <fwb-input type="email" label="Email" placeholder="Enter your Email" size="lg" />
-
-
+                            <fwb-input v-model="email" :validation-status="errors.email ? `error` : ``" type="email"
+                                label="Email" placeholder="Enter your Email" size="lg" />
+                            <p class="text-red-600 mb-5">{{ errors.email }}</p>
 
                             <!-- Password Input -->
-                            <fwb-input type="password" label="Password" placeholder="Enter your Password" size="lg" />
+                            <fwb-input v-model="password" type="password" name="password" label="Password"
+                                placeholder="Enter your Password" size="lg" />
 
+                            <p class="text-red-600">{{ errors.password }}</p>
 
                         </div>
 
@@ -41,13 +41,14 @@
                             </div>
                             <a href="#" class="text-sm text-primary ">Forgot password?</a>
                         </div>
-                        <router-link :to="{ name: 'adminLayout' }">
-                            <fwb-button class="w-full bg-primary hover:bg-secondary hover:text-white  text-white"
-                                color="alternative" type="submit" size="lg">
-                                <span>Login</span>
-                                <div class="flex justify-center"><fwb-spinner size="6" /></div>
-                            </fwb-button>
-                        </router-link>
+
+                        <fwb-button :disabled="authStore.isLoading"
+                            class="w-full bg-primary hover:bg-secondary hover:text-white  text-white" color="alternative"
+                            type="submit" size="lg">
+                            <span v-if="!authStore.isLoading">Login</span>
+                            <div v-if="authStore.isLoading" class="flex justify-center"><fwb-spinner size="6" /></div>
+                        </fwb-button>
+
 
 
 
@@ -61,5 +62,55 @@
 <script setup>
 import loginSVG from '@/assets/Secure-login.svg'
 import logo from '@/assets/logo-highlight.png'
-import { FwbInput, FwbButton } from 'flowbite-vue'
+import toast from '@/components/admin-component/ui/ToastMessage'
+import { FwbInput, FwbButton, FwbSpinner } from 'flowbite-vue'
+import { useAuthStore } from '@/stores/auth/auth.js';
+import { useField, useForm } from 'vee-validate'
+import { toTypedSchema } from '@vee-validate/zod'
+import { useRouter } from 'vue-router'
+import { ref } from "vue"
+import * as z from 'zod'
+
+
+const authStore = useAuthStore()
+const router = useRouter();
+
+const validationSchema = toTypedSchema(
+    z.object({
+        email: z.string()
+            .email({ message: "Please provide a valid email address" }),
+        password: z.string()
+            .min(8, { message: 'Password must be at least 8 characters long' })
+            .refine(value => /[0-9]/.test(value), { message: 'Password must contain at least one number' })
+            .refine(value => /[A-Z]/.test(value), { message: 'Password must contain at least one uppercase letter' })
+            .refine(value => /[a-z]/.test(value), { message: 'Password must contain at least one lowercase letter' })
+            .refine(value => /[\W_]/.test(value), { message: 'Password must contain at least one special character' })
+
+    })
+)
+
+const { handleSubmit, errors } = useForm({
+    validationSchema
+})
+
+const { value: email } = useField('email')
+const { value: password } = useField('password')
+
+// Submit handler
+const onSubmit = handleSubmit(async (value) => {
+    const user = await authStore.login({
+        email: value.email,
+        password: value.password
+    })
+
+    if (user == true) {
+        router.push('/admin');
+    } else {
+        toast(user, 'error')
+        console.log(user)
+    }
+});
+
+
+
 </script>

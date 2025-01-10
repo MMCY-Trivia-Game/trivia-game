@@ -102,10 +102,15 @@ exports.loginUser = [
 
     const { email, password } = req.body;
     const user = await User.findOne({ email });
+
+
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      res.status(401);
-      throw new Error('Invalid email or password!');
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or password!'
+      });
     }
+
 
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
