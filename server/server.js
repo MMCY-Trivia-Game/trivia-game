@@ -10,6 +10,7 @@ const leaderboardRoutes = require('./routes/leaderboardRoutes');
 const gameRoutes = require('./routes/gameRoutes');
 const userRoutes = require('./routes/userRoutes');
 
+
 connectDB(); // connect DB
 const app = express();
 const httpServer = createServer(app);

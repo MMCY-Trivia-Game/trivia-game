@@ -26,7 +26,8 @@
 
     <!--Game List-->
     <section class=" mt-5 grid grid-cols-3 gap-4 mb-4 md:grid-cols-4 lg:grid-cols-8">
-        <GameListCard v-for="game in games" @click="toggleModal" :title="game.title" :image="game.image" />
+        <GameListCard v-for="game in games" @click="toggleModal" :title="game.title" :active="game.is_active"
+            :image="game.image" />
     </section>
 
     <!--Modal Game detail-->
@@ -65,82 +66,98 @@ const games = [
     {
         id: 1,
         title: 'Game 1',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)]
+        image: gameImages[Math.floor(Math.random() * gameImages.length)],
+        is_active: true
     },
     {
         id: 2,
         title: 'Game 2',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)]
+        image: gameImages[Math.floor(Math.random() * gameImages.length)],
+        is_active: true,
     },
     {
         id: 2,
         title: 'Game 2',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)]
+        image: gameImages[Math.floor(Math.random() * gameImages.length)],
+        is_active: true
     },
     {
         id: 2,
         title: 'Game 2',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)]
+        image: gameImages[Math.floor(Math.random() * gameImages.length)],
+        is_active: true
     },
     {
         id: 1,
         title: 'Game 1',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)]
+        image: gameImages[Math.floor(Math.random() * gameImages.length)],
+        is_active: false
     },
     {
         id: 2,
         title: 'Game 2 Game 2 Game 2 Game 2 Game 2',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)]
+        image: gameImages[Math.floor(Math.random() * gameImages.length)],
+        is_active: false
     },
     {
         id: 2,
         title: 'Game 2',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)]
+        image: gameImages[Math.floor(Math.random() * gameImages.length)],
+        is_active: false
     },
     {
         id: 2,
         title: 'Game 2',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)]
+        image: gameImages[Math.floor(Math.random() * gameImages.length)],
+        is_active: false
     },
     {
         id: 1,
         title: 'Game 1',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)]
+        image: gameImages[Math.floor(Math.random() * gameImages.length)],
+        is_active: false
     },
     {
         id: 2,
         title: 'Game 2',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)]
+        image: gameImages[Math.floor(Math.random() * gameImages.length)],
+        is_active: false
     },
     {
         id: 2,
         title: 'Game 2',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)]
+        image: gameImages[Math.floor(Math.random() * gameImages.length)],
+        is_active: false
     },
     {
         id: 2,
         title: 'Game 2',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)]
+        image: gameImages[Math.floor(Math.random() * gameImages.length)],
+        is_active: false
     },
     {
         id: 1,
         title: 'Game 1',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)]
+        image: gameImages[Math.floor(Math.random() * gameImages.length)],
+        is_active: false
     },
     {
         id: 2,
         title: 'Game 2 Game 2 Game 2 Game 2 Game 2',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)]
+        image: gameImages[Math.floor(Math.random() * gameImages.length)],
+        is_active: false
     },
     {
         id: 2,
         title: 'Game 2',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)]
+        image: gameImages[Math.floor(Math.random() * gameImages.length)],
+        is_active: false
     },
     {
         id: 2,
         title: 'Game 2',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)]
+        image: gameImages[Math.floor(Math.random() * gameImages.length)],
+        is_active: false
     }
 ]
 

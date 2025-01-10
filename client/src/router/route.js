@@ -13,6 +13,11 @@ import PlayerGame from '@/components/playerComponent/PlayerGame.vue';
 import Leaderboard from '@/components/leaderboard/Leaderboard.vue';
 const routes = [
   {
+    path: '/login',
+    name: 'login',
+    component: () => import('@/pages/auth/login.vue')
+  },
+  {
     path: '/admin',
     name: 'adminLayout',
     redirect: 'admin/dashboard',

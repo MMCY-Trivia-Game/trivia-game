@@ -1,8 +1,8 @@
 <template>
     <div class="bg-white p-5 rounded-md">
         <h3 class="text-primary mb-5 font-bold text-2xl">Users</h3>
-        <div class="flex justify-between items-center">
-            <div class="mb-2 w-full md:w-1/3">
+        <div class="flex flex-col md:flex-row  justify-between items-center">
+            <div class="w-full md:w-1/3 block ">
                 <label for="search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
                 <div class="relative">
                     <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -13,12 +13,12 @@
                         placeholder="Search" required />
 
                     <div class="absolute end-2.5 bottom-2.5">
-                        <FwbButton color="light">Search</FwbButton>
+                        <Button @click="toggleModal" type="button" title="Search"></Button>
                     </div>
 
                 </div>
             </div>
-            <div class="mb-2 w-full md:w-1/3 text-end">
+            <div class="mb-2 w-full block mt-3 md:m-0  text-end">
                 <Button @click="toggleModal" type="button" title="Add"></Button>
             </div>
         </div>

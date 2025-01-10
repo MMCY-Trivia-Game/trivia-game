@@ -14,13 +14,14 @@
                     {{ title }}
                 </template>
             </fwb-tooltip>
+            <fwb-badge :type="active ? 'green' : 'default'">{{ active ? 'Active' : 'Not Active' }}</fwb-badge>
         </div>
     </fwb-card>
 </template>
 
 <script setup>
-import { FwbCard, FwbTooltip } from 'flowbite-vue'
-const { title, image, } = defineProps(['title', 'image'])
+import { FwbCard, FwbTooltip, FwbBadge } from 'flowbite-vue'
+const { title, image, active } = defineProps(['title', 'image', 'active'])
 
 
 
