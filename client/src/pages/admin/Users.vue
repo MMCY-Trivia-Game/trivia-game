@@ -43,7 +43,10 @@
                     <fwb-table-cell>{{ user.first_name }}</fwb-table-cell>
                     <fwb-table-cell>{{ user.last_name }}</fwb-table-cell>
                     <fwb-table-cell>{{ user.email }}</fwb-table-cell>
-                    <fwb-table-cell>{{ user.role }}</fwb-table-cell>
+                    <fwb-table-cell class="capitalize">
+                        <fwb-badge v-if="user.role == 'admin'"> {{ user.role }}</fwb-badge>
+                        <fwb-badge v-else type="dark"> {{ user.role }}</fwb-badge>
+                    </fwb-table-cell>
                     <fwb-table-cell>
                         <CheckCircleIcon v-if="user.is_active" class="h-6 w-6 text-green-500" />
                         <XCircleIcon v-else class="h-6 w-6 text-highlight" />
@@ -77,7 +80,8 @@ import {
     FwbTableHeadCell,
     FwbTableRow,
     FwbPagination,
-    FwbButton
+    FwbButton,
+    FwbBadge
 } from 'flowbite-vue'
 import ModalEdit from '@/components/admin-component/modal/ModalEdit.vue'
 import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
