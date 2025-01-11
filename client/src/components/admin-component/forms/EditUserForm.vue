@@ -36,6 +36,10 @@
             <p class="text-red-600 mb-5">{{ form_errors.confirm_password }}</p>
         </div>
 
+        <div class="col-span-2">
+            <fwb-toggle v-model="model.is_active" label="Active" />
+        </div>
+
 
     </div>
 </template>

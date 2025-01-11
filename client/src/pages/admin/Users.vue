@@ -96,7 +96,7 @@ import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
 import { CheckCircleIcon, XCircleIcon, TrashIcon, PencilSquareIcon } from '@heroicons/vue/24/solid';
 import Button from '@/components/admin-component/ui/PrimaryButton.vue'
 import { useUsersStore } from '@/stores/admin/userStore.js';
-import { useField, useForm } from 'vee-validate'
+import { useField, useForm, validate } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 import { reactive } from 'vue';
@@ -117,29 +117,31 @@ onMounted(async () => {
 const validationSchema = toTypedSchema(
     z.object({
         first_name: z.string()
-            .min(1, { message: "first name is required" })
-            .min(3, { message: "first name must be at least 3 characters long" }),
+            .min(1, { message: "First name is required" })
+            .min(3, { message: "First name must be at least 3 characters long" }),
         last_name: z.string()
-            .min(1, { message: "last name is required" })
-            .min(3, { message: "last name must be at least 3 characters long" }),
+            .min(1, { message: "Last name is required" })
+            .min(3, { message: "Last name must be at least 3 characters long" }),
         email: z.string()
             .email({ message: "Please provide a valid email address" }),
         role: z.string()
-            .min(1, { message: "Please provide a role of user" }),
+            .min(1, { message: "Please provide a role for the user" }),
         password: z.string()
             .min(8, { message: 'Password must be at least 8 characters long' })
             .refine(value => /\d/.test(value), { message: 'Password must contain at least one number' })
             .refine(value => /[A-Z]/.test(value), { message: 'Password must contain at least one uppercase letter' })
             .refine(value => /[a-z]/.test(value), { message: 'Password must contain at least one lowercase letter' })
             .refine(value => /[\W_]/.test(value), { message: 'Password must contain at least one special character' }),
-        confirm_password: z.string()
+        confirm_password: z.string(),
+        is_active: z.boolean().optional()
+    }).refine(data => data.password === data.confirm_password, {
+        message: "Passwords do not match",
+        path: ["confirm_password"],
     })
-        .refine(data => data.password === data.confirm_password, {
-            message: "Passwords do not match",
-            path: ["confirm_password"], // Specify where the error message should appear
-        }))
+);
 
-const { handleSubmit, errors, setValues, resetForm } = useForm({
+
+const { handleSubmit, errors, setValues, resetForm, setTouched } = useForm({
     validationSchema,
 })
 
@@ -149,6 +151,8 @@ const { value: email } = useField('email')
 const { value: role } = useField('role')
 const { value: password } = useField('password')
 const { value: confirm_password } = useField('confirm_password')
+const { value: is_active } = useField('is_active')
+
 
 const formData = reactive({
     first_name,
@@ -156,7 +160,8 @@ const formData = reactive({
     email,
     role,
     password,
-    confirm_password
+    confirm_password,
+    is_active
 })
 
 const toggleModal = (type = null, user = null) => {
@@ -169,6 +174,7 @@ const toggleModal = (type = null, user = null) => {
             last_name: user.last_name,
             email: user.email,
             role: user.role,
+            is_active: user.is_active,
             password: '7o8p9q0r1sA@',
             confirm_password: '7o8p9q0r1sA@'
         });
@@ -180,8 +186,9 @@ const toggleModal = (type = null, user = null) => {
 
 // Submit handler
 const onSubmit = handleSubmit(async (value) => {
-
     if (modalOption.value.type == 'post') {
+
+        value.is_active = value.is_active ?? false;
         const response = await userStore.addUser(value)
 
         if (response == true) {
@@ -196,7 +203,8 @@ const onSubmit = handleSubmit(async (value) => {
             first_name: value.first_name,
             last_name: value.last_name,
             email: value.email,
-            role: value.role
+            role: value.role,
+            is_active: value.is_active
         }
         const response = await userStore.updateUser(formData)
         if (response == true) {
