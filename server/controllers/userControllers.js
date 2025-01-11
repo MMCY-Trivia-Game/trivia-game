@@ -138,7 +138,15 @@ exports.logoutUser = async (req, res, next) => {
 
 exports.getAllUsers = async (req, res, next) => {
   try {
-    const users = await User.find().select('-password');
+    const options = {
+      page: req.query.page || 1,
+      limit: 10,
+      collation: {
+        locale: 'en',
+      },
+    };
+
+    const users = await User.paginate({}, options);
     res.json(users);
   } catch (error) {
     next(error);

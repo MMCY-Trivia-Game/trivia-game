@@ -5,18 +5,24 @@ import { jwtDecode } from "jwt-decode";
 export const useUsersStore = defineStore('userStore', {
     state: () => ({
         users: [],
+        currentPage: 0,
+        limit: 0,
+        totalPages: null,
         isLoading: false,
         error: null,
     }),
 
     actions: {
-        async fetchUsers() {
+        async fetchUsers(page = 1) {
             this.isLoading = true;
             this.error = null;
 
             try {
-                const response = await api.get('users');
-                this.users = response.data;
+                const response = await api.get(`users?page=${page}`);
+                this.users = response.data.docs;
+                this.totalPages = response.data.totalPages;
+                this.currentPage = response.data.page
+                this.limit = response.data.limit
             } catch (error) {
                 console.log('Error fetching users:', error);
                 this.error = error.response?.data?.errors.map((err) => err.msg).join(",") || error.response?.data?.message || 'Failed to fetch categories';
@@ -46,7 +52,6 @@ export const useUsersStore = defineStore('userStore', {
         },
 
         async updateUser(user) {
-            ///users/67822f2824fbb5190f517344
             this.isLoading = true;
             this.error = null;
 

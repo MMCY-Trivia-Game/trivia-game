@@ -16,9 +16,10 @@
                 <div class="flex justify-end">
 
                     <fwb-button :disabled="userStore.isLoading"
-                        class="w-full bg-primary hover:bg-secondary hover:text-white  text-white" color="alternative"
+                        class="w-full hover:text-white text-white bg-primary hover:bg-secondary" color="alternative"
                         type="submit" size="lg">
-                        <span v-if="!userStore.isLoading">{{ form_type == 'post' ? 'Add' : 'Update' }}</span>
+                        <span v-if="!userStore.isLoading">{{ form_type === 'post' ? 'Add' : 'Update' }}
+                        </span>
                         <div v-if="userStore.isLoading" class="flex justify-center"><fwb-spinner size="6" /></div>
                     </fwb-button>
 
@@ -37,7 +38,7 @@ import { useUsersStore } from '@/stores/admin/userStore.js';
 
 const userStore = useUsersStore()
 
-const { form_type, isShowModal, form_errors } = defineProps(['form_type', 'isShowModal', 'onSubmit', 'form_errors'])
+const { form_type, isShowModal, form_errors, user } = defineProps(['form_type', 'isShowModal', 'onSubmit', 'form_errors', 'user'])
 
 
 const model = defineModel({ required: true }) //form data

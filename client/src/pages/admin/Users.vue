@@ -38,10 +38,10 @@
             </fwb-table-head>
             <fwb-table-body>
 
-                <fwb-table-row v-for="user in userStore.users">
-                    <fwb-table-cell>1</fwb-table-cell>
-                    <fwb-table-cell>{{ user.first_name }}</fwb-table-cell>
-                    <fwb-table-cell>{{ user.last_name }}</fwb-table-cell>
+                <fwb-table-row v-for="(user, index) in userStore.users">
+                    <fwb-table-cell>{{ (currentPage - 1) * userStore.limit + index + 1 }}</fwb-table-cell>
+                    <fwb-table-cell class="capitalize">{{ user.first_name }}</fwb-table-cell>
+                    <fwb-table-cell class="capitalize">{{ user.last_name }}</fwb-table-cell>
                     <fwb-table-cell>{{ user.email }}</fwb-table-cell>
                     <fwb-table-cell class="capitalize">
                         <fwb-badge v-if="user.role == 'admin'"> {{ user.role }}</fwb-badge>
@@ -55,7 +55,6 @@
                         <div class="flex gap-3">
                             <PencilSquareIcon class="w-5 h-5 hover:scale-110 hover:text-secondary"
                                 @click="toggleModal('put', user)" />
-                            <TrashIcon class="w-5 h-5 hover:scale-110 hover:text-highlight" />
                         </div>
                     </fwb-table-cell>
                 </fwb-table-row>
@@ -65,14 +64,15 @@
         <div class="flex justify-center items-center text-center">
             <fwb-spinner v-if="userStore.isLoading" size="10" color="purple" />
         </div>
+
         <div class="text-end p-3">
-            <fwb-pagination class="mt-2" v-model="currentPage" :total-items="30"></fwb-pagination>
+            <fwb-pagination class="mt-2" v-model="currentPage" :total-pages="userStore.totalPages"></fwb-pagination>
         </div>
     </div>
 
 
-    <UserModal :form_type="modalOption.type" :form_errors="errors" v-model="formData" @submit="onSubmit"
-        @close="toggleModal" :isShowModal="modalOption.isShowModal" />
+    <UserModal :form_type="modalOption.type" :user="modalOption.user" :form_errors="errors" v-model="formData"
+        @submit="onSubmit" @close="toggleModal" :isShowModal="modalOption.isShowModal" />
 </template>
 
 <script setup>
@@ -93,14 +93,15 @@ import {
 } from 'flowbite-vue'
 import UserModal from '@/components/admin-component/modal/UserModal.vue'
 import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
-import { CheckCircleIcon, XCircleIcon, TrashIcon, PencilSquareIcon } from '@heroicons/vue/24/solid';
+import { CheckCircleIcon, XCircleIcon, PencilSquareIcon } from '@heroicons/vue/24/solid';
 import Button from '@/components/admin-component/ui/PrimaryButton.vue'
 import { useUsersStore } from '@/stores/admin/userStore.js';
 import { useField, useForm, validate } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
-import { reactive } from 'vue';
+import { reactive, watch } from 'vue';
 import toast from '@/components/admin-component/ui/ToastMessage'
+
 
 const userStore = useUsersStore()
 const currentPage = ref(1)
@@ -113,6 +114,11 @@ const modalOption = ref({
 onMounted(async () => {
     await userStore.fetchUsers()
 })
+
+watch(currentPage, async (newPage) => {
+    await userStore.fetchUsers(newPage);
+});
+
 
 const validationSchema = toTypedSchema(
     z.object({
@@ -141,7 +147,7 @@ const validationSchema = toTypedSchema(
 );
 
 
-const { handleSubmit, errors, setValues, resetForm, setTouched } = useForm({
+const { handleSubmit, errors, setValues, resetForm } = useForm({
     validationSchema,
 })
 
@@ -167,6 +173,7 @@ const formData = reactive({
 const toggleModal = (type = null, user = null) => {
     modalOption.value.isShowModal = !modalOption.value.isShowModal
     modalOption.value.type = type
+    modalOption.value.user = user
 
     if (type == 'put') {
         setValues({
