@@ -44,5 +44,31 @@ export const useUsersStore = defineStore('userStore', {
             }
             return this.error
         },
+
+        async updateUser(user) {
+            ///users/67822f2824fbb5190f517344
+            this.isLoading = true;
+            this.error = null;
+
+            try {
+                const response = await api.put(`users/${user._id}`, user);
+                const index = this.users.findIndex(item => item._id === user._id);
+                console.log(response.data, 'updated user')
+                if (index !== -1) {
+                    this.users[index] = response.data;
+                }
+            } catch (error) {
+                console.log('Error updating user:', error);
+                this.error = error.response?.data?.errors.map((err) => err.msg).join(",") || error.response?.data?.message || 'Failed to update user';
+            } finally {
+                this.isLoading = false;
+            }
+
+            if (!this.error) {
+                return true
+            }
+            return this.error
+
+        }
     }
 })

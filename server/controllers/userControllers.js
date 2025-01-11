@@ -190,8 +190,16 @@ exports.updateUserProfile = async (req, res) => {
       user.last_name = req.body.last_name || user.last_name;
       user.email = req.body.email || user.email;
 
-      if (req.body.password) {
-        user.password = req.body.password;
+      if (req.body.password || req.password) {
+        user.password = req.body.password || req.password;
+      }
+
+      if (req.body.role || req.role) {
+        user.role = req.body.role || req.role;
+      }
+
+      if (req.body.is_active || req.is_active) {
+        user.is_active = req.body.is_active || req.is_active;
       }
 
       const updatedUser = await user.save();
@@ -201,6 +209,8 @@ exports.updateUserProfile = async (req, res) => {
         first_name: updatedUser.first_name,
         last_name: updatedUser.last_name,
         email: updatedUser.email,
+        role: updatedUser.role,
+        is_active: updatedUser.is_active
       });
     } else {
       res.status(404);

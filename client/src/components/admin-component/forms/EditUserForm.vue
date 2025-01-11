@@ -25,12 +25,12 @@
             <p class="text-red-600 mb-5">{{ form_errors.role }}</p>
         </div>
 
-        <div class="col-span-2">
+        <div class="col-span-2" v-if="form_type == 'post'">
             <FwbInput :validation-status="form_errors.password ? `error` : ``" v-model="model.password" type="password"
                 required placeholder="Enter user password" label="Password" />
             <p class="text-red-600 mb-5">{{ form_errors.password }}</p>
         </div>
-        <div class="col-span-2">a
+        <div class="col-span-2" v-if="form_type == 'post'">
             <FwbInput :validation-status="form_errors.confirm_password ? `error` : ``" v-model="model.confirm_password"
                 type="password" required placeholder="confirm password" label="Confirm password" />
             <p class="text-red-600 mb-5">{{ form_errors.confirm_password }}</p>
@@ -43,7 +43,7 @@
 <script setup>
 import { FwbInput, FwbSelect, FwbToggle } from 'flowbite-vue'
 const model = defineModel({ required: true })
-const { form_errors } = defineProps(['form_errors'])
+const { form_errors, form_type } = defineProps(['form_errors', 'form_type'])
 
 const roles = [
     { value: 'admin', name: 'Admin' },

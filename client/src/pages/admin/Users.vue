@@ -13,13 +13,13 @@
                         placeholder="Search" required />
 
                     <div class="absolute end-2.5 bottom-2.5">
-                        <Button @click="toggleModal" type="button" title="Search"></Button>
+                        <Button type="button" title="Search"></Button>
                     </div>
 
                 </div>
             </div>
             <div class="mb-2 w-full block mt-3 md:m-0  text-end">
-                <Button @click="toggleModal" type="button" title="Add"></Button>
+                <Button @click="toggleModal('post')" type="button" title="Add"></Button>
             </div>
         </div>
 
@@ -52,9 +52,11 @@
                         <XCircleIcon v-else class="h-6 w-6 text-highlight" />
                     </fwb-table-cell>
                     <fwb-table-cell>
-                        <fwb-a @click="toggleModal" href="#">
-                            Edit
-                        </fwb-a>
+                        <div class="flex gap-3">
+                            <PencilSquareIcon class="w-5 h-5 hover:scale-110 hover:text-secondary"
+                                @click="toggleModal('put', user)" />
+                            <TrashIcon class="w-5 h-5 hover:scale-110 hover:text-highlight" />
+                        </div>
                     </fwb-table-cell>
                 </fwb-table-row>
 
@@ -69,13 +71,13 @@
     </div>
 
 
-    <UserModal :header="'Add User'" :form_errors="errors" v-model="formData" @submit="onSubmit" @close="toggleModal"
-        :isShowModal="isShowModal" />
+    <UserModal :form_type="modalOption.type" :form_errors="errors" v-model="formData" @submit="onSubmit"
+        @close="toggleModal" :isShowModal="modalOption.isShowModal" />
 </template>
 
 <script setup>
 
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref } from 'vue'
 import {
     FwbA,
     FwbTable,
@@ -91,7 +93,7 @@ import {
 } from 'flowbite-vue'
 import UserModal from '@/components/admin-component/modal/UserModal.vue'
 import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
-import { CheckCircleIcon, XCircleIcon } from '@heroicons/vue/24/solid';
+import { CheckCircleIcon, XCircleIcon, TrashIcon, PencilSquareIcon } from '@heroicons/vue/24/solid';
 import Button from '@/components/admin-component/ui/PrimaryButton.vue'
 import { useUsersStore } from '@/stores/admin/userStore.js';
 import { useField, useForm } from 'vee-validate'
@@ -102,15 +104,15 @@ import toast from '@/components/admin-component/ui/ToastMessage'
 
 const userStore = useUsersStore()
 const currentPage = ref(1)
-const isShowModal = ref(false)
+const modalOption = ref({
+    isShowModal: false,
+    type: null,
+    user: null
+})
 
 onMounted(async () => {
     await userStore.fetchUsers()
 })
-
-const toggleModal = () => {
-    isShowModal.value = !isShowModal.value
-}
 
 const validationSchema = toTypedSchema(
     z.object({
@@ -137,8 +139,7 @@ const validationSchema = toTypedSchema(
             path: ["confirm_password"], // Specify where the error message should appear
         }))
 
-
-const { handleSubmit, errors } = useForm({
+const { handleSubmit, errors, setValues, resetForm } = useForm({
     validationSchema,
 })
 
@@ -158,18 +159,54 @@ const formData = reactive({
     confirm_password
 })
 
+const toggleModal = (type = null, user = null) => {
+    modalOption.value.isShowModal = !modalOption.value.isShowModal
+    modalOption.value.type = type
+
+    if (type == 'put') {
+        setValues({
+            first_name: user.first_name,
+            last_name: user.last_name,
+            email: user.email,
+            role: user.role,
+            password: '7o8p9q0r1sA@',
+            confirm_password: '7o8p9q0r1sA@'
+        });
+        modalOption.value.user = user._id
+    } else {
+        resetForm()
+    }
+}
 
 // Submit handler
 const onSubmit = handleSubmit(async (value) => {
-    const user = await userStore.addUser(value)
 
-    if (user == true) {
-        toast("Registration successful!", 'success')
-        toggleModal()
+    if (modalOption.value.type == 'post') {
+        const response = await userStore.addUser(value)
+
+        if (response == true) {
+            toast("Registration successful!", 'success')
+            toggleModal()
+        } else {
+            toast(response, 'error')
+        }
     } else {
-        toast(user, 'error')
-        console.log(user)
+        const formData = {
+            _id: modalOption.value.user,
+            first_name: value.first_name,
+            last_name: value.last_name,
+            email: value.email,
+            role: value.role
+        }
+        const response = await userStore.updateUser(formData)
+        if (response == true) {
+            toast("successfully user updated!", 'success')
+            toggleModal()
+        } else {
+            toast(response, 'error')
+        }
     }
+
 });
 
 
