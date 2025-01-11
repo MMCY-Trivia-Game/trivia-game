@@ -24,7 +24,7 @@
         </div>
 
 
-        <fwb-table class="mt-3" hoverable>
+        <fwb-table v-if="!userStore.isLoading" class="mt-3" hoverable>
             <fwb-table-head>
                 <fwb-table-head-cell>#</fwb-table-head-cell>
                 <fwb-table-head-cell>First Name</fwb-table-head-cell>
@@ -60,17 +60,22 @@
 
             </fwb-table-body>
         </fwb-table>
+        <div class="flex justify-center items-center text-center">
+            <fwb-spinner v-if="userStore.isLoading" size="10" color="purple" />
+        </div>
         <div class="text-end p-3">
             <fwb-pagination class="mt-2" v-model="currentPage" :total-items="30"></fwb-pagination>
         </div>
     </div>
 
-    <ModalEdit @close="toggleModal" :isShowModal="isShowModal" />
+
+    <UserModal :header="'Add User'" :form_errors="errors" v-model="formData" @submit="onSubmit" @close="toggleModal"
+        :isShowModal="isShowModal" />
 </template>
 
 <script setup>
 
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import {
     FwbA,
     FwbTable,
@@ -81,13 +86,19 @@ import {
     FwbTableRow,
     FwbPagination,
     FwbButton,
-    FwbBadge
+    FwbBadge,
+    FwbSpinner
 } from 'flowbite-vue'
-import ModalEdit from '@/components/admin-component/modal/ModalEdit.vue'
+import UserModal from '@/components/admin-component/modal/UserModal.vue'
 import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/vue/24/solid';
 import Button from '@/components/admin-component/ui/PrimaryButton.vue'
 import { useUsersStore } from '@/stores/admin/userStore.js';
+import { useField, useForm } from 'vee-validate'
+import { toTypedSchema } from '@vee-validate/zod'
+import * as z from 'zod'
+import { reactive } from 'vue';
+import toast from '@/components/admin-component/ui/ToastMessage'
 
 const userStore = useUsersStore()
 const currentPage = ref(1)
@@ -100,6 +111,66 @@ onMounted(async () => {
 const toggleModal = () => {
     isShowModal.value = !isShowModal.value
 }
+
+const validationSchema = toTypedSchema(
+    z.object({
+        first_name: z.string()
+            .min(1, { message: "first name is required" })
+            .min(3, { message: "first name must be at least 3 characters long" }),
+        last_name: z.string()
+            .min(1, { message: "last name is required" })
+            .min(3, { message: "last name must be at least 3 characters long" }),
+        email: z.string()
+            .email({ message: "Please provide a valid email address" }),
+        role: z.string()
+            .min(1, { message: "Please provide a role of user" }),
+        password: z.string()
+            .min(8, { message: 'Password must be at least 8 characters long' })
+            .refine(value => /\d/.test(value), { message: 'Password must contain at least one number' })
+            .refine(value => /[A-Z]/.test(value), { message: 'Password must contain at least one uppercase letter' })
+            .refine(value => /[a-z]/.test(value), { message: 'Password must contain at least one lowercase letter' })
+            .refine(value => /[\W_]/.test(value), { message: 'Password must contain at least one special character' }),
+        confirm_password: z.string()
+    })
+        .refine(data => data.password === data.confirm_password, {
+            message: "Passwords do not match",
+            path: ["confirm_password"], // Specify where the error message should appear
+        }))
+
+
+const { handleSubmit, errors } = useForm({
+    validationSchema,
+})
+
+const { value: first_name } = useField('first_name')
+const { value: last_name } = useField('last_name')
+const { value: email } = useField('email')
+const { value: role } = useField('role')
+const { value: password } = useField('password')
+const { value: confirm_password } = useField('confirm_password')
+
+const formData = reactive({
+    first_name,
+    last_name,
+    email,
+    role,
+    password,
+    confirm_password
+})
+
+
+// Submit handler
+const onSubmit = handleSubmit(async (value) => {
+    const user = await userStore.addUser(value)
+
+    if (user == true) {
+        toast("Registration successful!", 'success')
+        toggleModal()
+    } else {
+        toast(user, 'error')
+        console.log(user)
+    }
+});
 
 
 </script>

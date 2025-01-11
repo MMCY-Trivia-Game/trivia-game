@@ -26,8 +26,9 @@
                             <p class="text-red-600 mb-5">{{ errors.email }}</p>
 
                             <!-- Password Input -->
-                            <fwb-input v-model="password" type="password" name="password" label="Password"
-                                placeholder="Enter your Password" size="lg" />
+                            <fwb-input v-model="password" :validation-status="errors.password ? `error` : ``"
+                                type="password" name="password" label="Password" placeholder="Enter your Password"
+                                size="lg" />
 
                             <p class="text-red-600">{{ errors.password }}</p>
 
@@ -88,6 +89,7 @@ const validationSchema = toTypedSchema(
 
     })
 )
+
 
 const { handleSubmit, errors } = useForm({
     validationSchema
