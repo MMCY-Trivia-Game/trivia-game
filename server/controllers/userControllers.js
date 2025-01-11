@@ -138,15 +138,31 @@ exports.logoutUser = async (req, res, next) => {
 
 exports.getAllUsers = async (req, res, next) => {
   try {
+    const { q } = req.query;  // Extract q from req.query, not req.body
     const options = {
-      page: req.query.page || 1,
-      limit: 10,
+      page: req.query.page || 1, // Default to page 1 if not provided
+      limit: 10,  // You can adjust the limit as needed
       collation: {
         locale: 'en',
       },
     };
 
-    const users = await User.paginate({}, options);
+    let searchQuery = {};
+
+    if (q) {
+      // Build the search query using regex for case-insensitive search
+      searchQuery = {
+        $or: [
+          { first_name: { $regex: q, $options: 'i' } },
+          { last_name: { $regex: q, $options: 'i' } },
+          { email: { $regex: q, $options: 'i' } },
+          { role: { $regex: q, $options: 'i' } },
+        ],
+      };
+    }
+
+    const users = await User.paginate(searchQuery, options);
+
     res.json(users);
   } catch (error) {
     next(error);

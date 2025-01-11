@@ -13,12 +13,14 @@ export const useUsersStore = defineStore('userStore', {
     }),
 
     actions: {
-        async fetchUsers(page = 1) {
+        async fetchUsers(page = 1, q = null) {
             this.isLoading = true;
             this.error = null;
 
+            console.log(`users?page=${page}${q ? `&q=${q}` : ''}`)
+
             try {
-                const response = await api.get(`users?page=${page}`);
+                const response = await api.get(`users?page=${page}${q ? `&q=${q}` : ''}`);
                 this.users = response.data.docs;
                 this.totalPages = response.data.totalPages;
                 this.currentPage = response.data.page

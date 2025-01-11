@@ -8,12 +8,12 @@
                     <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
                         <MagnifyingGlassIcon class="text-primary h-4 w-4" />
                     </div>
-                    <input type="search" id="search"
+                    <input type="search" v-model="searchData"
                         class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-primary focus:border-primary dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary dark:focus:border-primary"
                         placeholder="Search" required />
 
                     <div class="absolute end-2.5 bottom-2.5">
-                        <Button type="button" title="Search"></Button>
+                        <Button @click="onSearch" type="button" title="Search"></Button>
                     </div>
 
                 </div>
@@ -24,7 +24,7 @@
         </div>
 
 
-        <fwb-table v-if="!userStore.isLoading" class="mt-3" hoverable>
+        <fwb-table v-if="!userStore.isLoading && userStore.users.length > 0" class="mt-3" hoverable>
             <fwb-table-head>
                 <fwb-table-head-cell>#</fwb-table-head-cell>
                 <fwb-table-head-cell>First Name</fwb-table-head-cell>
@@ -36,6 +36,7 @@
                     <span class="sr-only">Edit</span>
                 </fwb-table-head-cell>
             </fwb-table-head>
+
             <fwb-table-body>
 
                 <fwb-table-row v-for="(user, index) in userStore.users">
@@ -61,6 +62,13 @@
 
             </fwb-table-body>
         </fwb-table>
+
+        <!-- No data found message -->
+        <div v-else-if="!userStore.isLoading && userStore.users.length === 0"
+            class="flex justify-center items-center text-center">
+            <p class="text-highlight">No data found</p>
+        </div>
+
         <div class="flex justify-center items-center text-center">
             <fwb-spinner v-if="userStore.isLoading" size="10" color="purple" />
         </div>
@@ -105,11 +113,13 @@ import toast from '@/components/admin-component/ui/ToastMessage'
 
 const userStore = useUsersStore()
 const currentPage = ref(1)
+const searchData = ref('')
 const modalOption = ref({
     isShowModal: false,
     type: null,
     user: null
 })
+
 
 onMounted(async () => {
     await userStore.fetchUsers()
@@ -224,5 +234,10 @@ const onSubmit = handleSubmit(async (value) => {
 
 });
 
+
+//on search handler
+const onSearch = async () => {
+    await userStore.fetchUsers(1, searchData.value);
+}
 
 </script>
