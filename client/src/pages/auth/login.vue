@@ -50,9 +50,6 @@
                             <div v-if="authStore.isLoading" class="flex justify-center"><fwb-spinner size="6" /></div>
                         </fwb-button>
 
-
-
-
                     </form>
                 </div>
             </div>
@@ -100,16 +97,24 @@ const { value: password } = useField('password')
 
 // Submit handler
 const onSubmit = handleSubmit(async (value) => {
-    const user = await authStore.login({
+    const response = await authStore.login({
         email: value.email,
         password: value.password
     })
 
-    if (user == true) {
-        router.push('/admin');
+    if (response == true) {
+        if (authStore.user.role === 'admin' && authStore.user.is_active) {
+            router.push('/admin');
+        }
+        else if (authStore.user.role === 'creator' && authStore.user.is_active) {
+            router.push('/creator');
+        }
+        else {
+            toast("You don't have permission to access this content!", 'error')
+        }
+
     } else {
-        toast(user, 'error')
-        console.log(user)
+        toast(response, 'error')
     }
 });
 

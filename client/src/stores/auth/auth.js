@@ -10,7 +10,14 @@ export const useAuthStore = defineStore('auth', {
         isLoading: false,
         error: null,
     }),
-
+    getters: {
+        userRole: (state) => {
+            if (state.accessToken) {
+                return jwtDecode(state.accessToken)?.user?.role || null;
+            }
+            return null
+        }
+    },
     actions: {
         setToken(accessToken, refreshToken) {
             this.accessToken = accessToken;
@@ -33,6 +40,8 @@ export const useAuthStore = defineStore('auth', {
             const { exp } = jwtDecode(this.accessToken);
             return exp * 1000 > Date.now();
         },
+
+
 
         logout() {
             this.clearToken();

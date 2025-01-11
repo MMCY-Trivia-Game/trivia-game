@@ -15,7 +15,7 @@ import { useAuthStore } from '@/stores/auth/auth.js';
 
 const routes = [
   {
-    path: '/login',
+    path: '/',
     name: 'login',
     component: () => import('@/pages/auth/login.vue')
   },
@@ -27,7 +27,11 @@ const routes = [
     beforeEnter: (to, from, next) => {
       const userAuth = useAuthStore()
       if (userAuth.accessToken) {
-        next();
+        if (userAuth.user.role === 'admin') {
+          next();
+        } else {
+          next({ name: 'login', query: { redirect: to.fullPath } });
+        }
       } else {
         next({ name: 'login', query: { redirect: to.fullPath } });
       }
