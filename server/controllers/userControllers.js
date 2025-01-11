@@ -38,6 +38,8 @@ exports.registerUser = [
     .withMessage('Password must contain at least one lowercase letter')
     .matches(/[\W_]/) // Ensure it contains at least one special character
     .withMessage('Password must contain at least one special character'),
+  check('is_active')
+    .isBoolean(),
 
   asyncHandler(async (req, res) => {
     // Get validation result from request
@@ -49,7 +51,7 @@ exports.registerUser = [
     }
 
     // Extract validated data
-    const { first_name, last_name, email, role, password } = req.body;
+    const { first_name, last_name, email, role, password, is_active } = req.body;
 
     //check if the user is available
     const userAvailable = await User.findOne({ email });
@@ -59,7 +61,7 @@ exports.registerUser = [
     }
 
     //save user
-    const user = await User.create({ first_name, last_name, email, role, password });
+    const user = await User.create({ first_name, last_name, email, role, password, is_active });
 
     if (user) {
       const userObj = user.toObject();

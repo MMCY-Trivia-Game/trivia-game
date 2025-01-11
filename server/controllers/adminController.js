@@ -1,6 +1,8 @@
 const { check, validationResult } = require("express-validator");
 const User = require('../models/userModel')
-const asyncHandler = require("express-async-handler");
+const asyncHandler = require("express-async-handler"); x
+
+
 
 
 /**
