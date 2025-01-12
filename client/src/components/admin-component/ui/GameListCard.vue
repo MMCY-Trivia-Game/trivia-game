@@ -4,11 +4,11 @@
         <div class="p-2">
             <fwb-tooltip>
                 <template #trigger>
-                    <fwb-button>
+                    <button>
                         <p class="font-normal w-20 text-gray-700 dark:text-gray-400 truncate overflow-hidden">
                             {{ title }}
                         </p>
-                    </fwb-button>
+                    </button>
                 </template>
                 <template #content>
                     {{ title }}
@@ -20,7 +20,7 @@
 </template>
 
 <script setup>
-import { FwbCard, FwbTooltip, FwbBadge } from 'flowbite-vue'
+import { FwbCard, FwbTooltip, FwbBadge, FwbButton } from 'flowbite-vue'
 const { title, image, active } = defineProps(['title', 'image', 'active'])
 
 

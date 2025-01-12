@@ -18,16 +18,16 @@
     </section>
 
     <!--categories-->
-    <section class="flex flex-row gap-4 mt-5 justify-between overflow-x-auto scrollbar-hide">
-        <fwb-button class="w-30 h-8 sm:w-30 sm:h-8" size="sm" v-for="category in categories"
-            :color="`${selectedCategory == category ? 'red' : 'alternative'}`">
+    <section class="flex flex-row pt-3 ps-2 pe-2 pb-3 gap-4 mt-5 justify-between overflow-x-auto scrollbar-hide">
+        <FwbButton class="w-30 h-8 sm:w-30 sm:h-8" size="sm" v-for="category in categories"
+            :color="`${selectedCategory == category ? 'purple' : 'alternative'}`"
+            @click="handleOnCategorySelected(category)">
             {{ category }}
-        </fwb-button>
+        </FwbButton>
     </section>
 
     <!--Game List-->
     <section class=" mt-5 grid grid-cols-3 gap-4 mb-4 md:grid-cols-4 lg:grid-cols-8">
-
         <GameListCard v-if="!gameStore.isLoading && gameStore.games.length > 0" v-for="game in gameStore.games"
             @click="toggleModal" :title="game.title" :active="game.is_active"
             :image="gameImages[Math.floor(Math.random() * gameImages.length)]" />
@@ -78,14 +78,9 @@ onMounted(async () => {
     await gameStore.fetchGames()
 })
 
-
-
-
 const toggleModal = () => {
     isShowModal.value = !isShowModal.value
 }
-
-
 const gameImages = [arcadeImage, controllerImage, gameConsoleImage, gamerImage, ghostImage, joystickImage, mushroomImage, pikachuImage]
 
 const categories = [
@@ -103,7 +98,10 @@ const categories = [
     'Others'
 ]
 
-
+const handleOnCategorySelected = (category) => {
+    selectedCategory.value = category
+    console.log('category selected')
+}
 </script>
 
 
