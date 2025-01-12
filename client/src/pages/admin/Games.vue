@@ -98,9 +98,9 @@ const categories = [
     'Others'
 ]
 
-const handleOnCategorySelected = (category) => {
+const handleOnCategorySelected = async (category) => {
     selectedCategory.value = category
-    console.log('category selected')
+    await gameStore.fetchGames(category)
 }
 </script>
 
