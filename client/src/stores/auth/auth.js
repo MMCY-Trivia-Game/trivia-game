@@ -41,12 +41,11 @@ export const useAuthStore = defineStore('auth', {
             return exp * 1000 > Date.now();
         },
 
-
-
         logout() {
             this.clearToken();
             this.user = null;
         },
+
 
         async login(credentials) {
             this.isLoading = true;
@@ -68,8 +67,30 @@ export const useAuthStore = defineStore('auth', {
                 return true
             }
             return this.error
+        },
 
+        async refreshToken() {
+            this.isLoading = true;
+            this.error = null;
 
+            try {
+                const response = await api.post('users/refresh-token', {
+                    refreshToken: this.refreshToken
+                });
+                this.setToken(response.data.accessToken, this.refreshToken);
+                this.user = jwtDecode(this.accessToken);
+
+            } catch (error) {
+                console.error('token error error:', error);
+                this.error = error.response?.data?.message || error.response?.data?.message || 'token error failed';
+            } finally {
+                this.isLoading = false;
+            }
+
+            if (this.user) {
+                return true
+            }
+            return this.error
         },
     }
 })

@@ -1,5 +1,5 @@
 <template>
-    <h3 class="text-primary mb-5 font-bold text-2xl">Users</h3>
+    <h3 class="text-primary  font-bold text-2xl">Users</h3>
     <!--Search game-->
     <section class="w-full md:w-1/3">
         <label for="search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
@@ -19,16 +19,30 @@
 
     <!--categories-->
     <section class="flex flex-row gap-4 mt-5 justify-between overflow-x-auto scrollbar-hide">
-        <fwb-button class="w-30 h-8 sm:w-30 sm:h-8" size="sm" v-for="category in categories" color="alternative">
+        <fwb-button class="w-30 h-8 sm:w-30 sm:h-8" size="sm" v-for="category in categories"
+            :color="`${selectedCategory == category ? 'red' : 'alternative'}`">
             {{ category }}
         </fwb-button>
     </section>
 
     <!--Game List-->
     <section class=" mt-5 grid grid-cols-3 gap-4 mb-4 md:grid-cols-4 lg:grid-cols-8">
-        <GameListCard v-for="game in games" @click="toggleModal" :title="game.title" :active="game.is_active"
-            :image="game.image" />
+
+        <GameListCard v-if="!gameStore.isLoading && gameStore.games.length > 0" v-for="game in gameStore.games"
+            @click="toggleModal" :title="game.title" :active="game.is_active"
+            :image="gameImages[Math.floor(Math.random() * gameImages.length)]" />
     </section>
+
+    <!-- No game found message -->
+    <div v-if="!gameStore.isLoading && gameStore.games.length === 0" class="flex justify-center items-center text-center">
+        <p class="text-highlight">No game found</p>
+    </div>
+
+    <!--show loading-->
+    <div class="flex justify-center items-center text-center">
+        <fwb-spinner v-if="gameStore.isLoading" size="10" color="purple" />
+    </div>
+
 
     <!--Modal Game detail-->
     <GameDetailModal @close="toggleModal" :isShowModal="isShowModal" />
@@ -40,9 +54,11 @@ import { ref } from 'vue';
 import GameListCard from '@/components/admin-component/ui/GameListCard.vue';
 import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
 import Button from '@/components/admin-component/ui/PrimaryButton.vue'
-import { FwbButton } from 'flowbite-vue'
+import { FwbButton, FwbSpinner } from 'flowbite-vue'
 import GameDetailModal from '@/components/admin-component/modal/GameDetailModal.vue'
+import { useGameStore } from '@/stores/admin/gameStore';
 
+//images
 import arcadeImage from '@/assets/gameIcons/arcade.png'
 import controllerImage from '@/assets/gameIcons/controller.png'
 import gameConsoleImage from '@/assets/gameIcons/game-console.png'
@@ -51,10 +67,20 @@ import ghostImage from '@/assets/gameIcons/ghost.png'
 import joystickImage from '@/assets/gameIcons/joystick.png'
 import mushroomImage from '@/assets/gameIcons/mushroom.png'
 import pikachuImage from '@/assets/gameIcons/pikachu.png'
+import { onMounted } from 'vue';
 
 
-
+const gameStore = useGameStore()
 const isShowModal = ref(false)
+const selectedCategory = ref('All')
+
+onMounted(async () => {
+    await gameStore.fetchGames()
+})
+
+
+
+
 const toggleModal = () => {
     isShowModal.value = !isShowModal.value
 }
@@ -62,108 +88,9 @@ const toggleModal = () => {
 
 const gameImages = [arcadeImage, controllerImage, gameConsoleImage, gamerImage, ghostImage, joystickImage, mushroomImage, pikachuImage]
 
-const games = [
-    {
-        id: 1,
-        title: 'Game 1',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)],
-        is_active: true
-    },
-    {
-        id: 2,
-        title: 'Game 2',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)],
-        is_active: true,
-    },
-    {
-        id: 2,
-        title: 'Game 2',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)],
-        is_active: true
-    },
-    {
-        id: 2,
-        title: 'Game 2',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)],
-        is_active: true
-    },
-    {
-        id: 1,
-        title: 'Game 1',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)],
-        is_active: false
-    },
-    {
-        id: 2,
-        title: 'Game 2 Game 2 Game 2 Game 2 Game 2',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)],
-        is_active: false
-    },
-    {
-        id: 2,
-        title: 'Game 2',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)],
-        is_active: false
-    },
-    {
-        id: 2,
-        title: 'Game 2',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)],
-        is_active: false
-    },
-    {
-        id: 1,
-        title: 'Game 1',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)],
-        is_active: false
-    },
-    {
-        id: 2,
-        title: 'Game 2',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)],
-        is_active: false
-    },
-    {
-        id: 2,
-        title: 'Game 2',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)],
-        is_active: false
-    },
-    {
-        id: 2,
-        title: 'Game 2',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)],
-        is_active: false
-    },
-    {
-        id: 1,
-        title: 'Game 1',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)],
-        is_active: false
-    },
-    {
-        id: 2,
-        title: 'Game 2 Game 2 Game 2 Game 2 Game 2',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)],
-        is_active: false
-    },
-    {
-        id: 2,
-        title: 'Game 2',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)],
-        is_active: false
-    },
-    {
-        id: 2,
-        title: 'Game 2',
-        image: gameImages[Math.floor(Math.random() * gameImages.length)],
-        is_active: false
-    }
-]
-
 const categories = [
     'All',
-    'General',
+    'General Knowledge',
     'Technology',
     'History',
     'Geography',
@@ -172,7 +99,8 @@ const categories = [
     'Culture',
     'Food and Drink',
     'Mythology',
-    'Fun'
+    'Fun',
+    'Others'
 ]
 
 

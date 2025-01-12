@@ -1,6 +1,5 @@
 import api from '@/plugins/axios'
 import { defineStore } from "pinia";
-import { jwtDecode } from "jwt-decode";
 
 export const useUsersStore = defineStore('userStore', {
     state: () => ({
@@ -17,7 +16,6 @@ export const useUsersStore = defineStore('userStore', {
             this.isLoading = true;
             this.error = null;
 
-            console.log(`users?page=${page}${q ? `&q=${q}` : ''}`)
 
             try {
                 const response = await api.get(`users?page=${page}${q ? `&q=${q}` : ''}`);

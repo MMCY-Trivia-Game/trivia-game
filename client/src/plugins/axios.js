@@ -25,14 +25,25 @@ api.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
+// Response Interceptor
 api.interceptors.response.use(
     (response) => response,
-    (error) => {
-        // Handle unauthorized errors (401)
-        if (error.response?.status === 401) {
-            const authStore = useAuthStore();
-            authStore.logout();
+    async (error) => {
+        const authStore = useAuthStore();
+
+
+        if (error.response?.status === 401 && !error.config._retry) {
+            error.config._retry = true;
+            try {
+                await authStore.refreshToken();
+                error.config.headers.Authorization = `Bearer ${authStore.accessToken}`;
+                return api(error.config);
+            } catch (refreshError) {
+                authStore.logout();
+                return Promise.reject(refreshError);
+            }
         }
+
         return Promise.reject(error);
     }
 );
