@@ -206,7 +206,7 @@ exports.refreshToken = (req, res, next) => {
   }
 };
 
-exports.updateUserProfile = async (req, res) => {
+exports.updateUserProfile = async (req, res, next) => {
   try {
     const { id } = req.params;
     const user = await User.findById(id);
@@ -246,6 +246,8 @@ exports.updateUserProfile = async (req, res) => {
     next(error);
   }
 };
+
+
 
 exports.promoteUserToAdmin = async (req, res) => {
   try {
@@ -302,6 +304,31 @@ exports.activateUser = async (req, res, next) => {
       throw new Error('User not found!');
     }
     res.json({ message: 'User activated successfully!', user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+exports.updatePassword = async (req, res, next) => {
+  const { oldPassword, newPassword } = req.body;
+  const { id } = req.params;
+
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Old password is incorrect' });
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    res.status(200).json({ message: 'Password updated successfully' });
   } catch (error) {
     next(error);
   }

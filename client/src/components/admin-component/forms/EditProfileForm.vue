@@ -38,30 +38,32 @@
                 </form>
             </fwb-tab>
             <fwb-tab name="Password" title="Password">
-                <div class="mt-3 grid gap-4 mb-4 grid-cols-1">
-                    <div class="col-span-2">
-                        <FwbInput :validation-status="passwordErrors.old_password ? `error` : ``" v-model="old_password"
-                            type="password" required placeholder="Enter user password" label="Old password" />
-                        <p class="text-red-600 mb-5">{{ passwordErrors.old_password }}</p>
-                    </div>
+                <form @submit="onPasswordSubmit">
+                    <div class="mt-3 grid gap-4 mb-4 grid-cols-1">
+                        <div class="col-span-2">
+                            <FwbInput :validation-status="passwordErrors.old_password ? `error` : ``" v-model="old_password"
+                                type="password" required placeholder="Enter user password" label="Old password" />
+                            <p class="text-red-600 mb-5">{{ passwordErrors.old_password }}</p>
+                        </div>
 
-                    <div class="col-span-2">
-                        <FwbInput :validation-status="passwordErrors.password ? `error` : ``" v-model="password"
-                            type="password" required placeholder="Enter user password" label="Password" />
-                        <p class="text-red-600 mb-5">{{ passwordErrors.password }}</p>
-                    </div>
-                    <div class="col-span-2">
-                        <FwbInput :validation-status="passwordErrors.confirm_password ? `error` : ``"
-                            v-model="confirm_password" type="password" required placeholder="confirm password"
-                            label="Confirm password" />
-                        <p class="text-red-600 mb-5">{{ passwordErrors.confirm_password }}</p>
-                    </div>
+                        <div class="col-span-2">
+                            <FwbInput :validation-status="passwordErrors.password ? `error` : ``" v-model="password"
+                                type="password" required placeholder="Enter user password" label="Password" />
+                            <p class="text-red-600 mb-5">{{ passwordErrors.password }}</p>
+                        </div>
+                        <div class="col-span-2">
+                            <FwbInput :validation-status="passwordErrors.confirm_password ? `error` : ``"
+                                v-model="confirm_password" type="password" required placeholder="confirm password"
+                                label="Confirm password" />
+                            <p class="text-red-600 mb-5">{{ passwordErrors.confirm_password }}</p>
+                        </div>
 
-                    <div class="flex gap-3">
-                        <Button title="Update"></Button>
-                    </div>
+                        <div class="flex gap-3">
+                            <Button title="Update"></Button>
+                        </div>
 
-                </div>
+                    </div>
+                </form>
             </fwb-tab>
 
         </fwb-tabs>
@@ -80,9 +82,11 @@ import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 import { useAuthStore } from '@/stores/auth/auth.js';
 import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
 
 const userStore = useAuthStore()
+const router = useRouter();
 
 const userInfoValidationSchema = toTypedSchema(
     z.object({
@@ -123,9 +127,17 @@ const { handleSubmit, setValues, errors } = useForm({
     validationSchema: userInfoValidationSchema
 })
 
+const { value: first_name } = useField('first_name')
+const { value: last_name } = useField('last_name')
+const { value: email } = useField('email')
+
 const { handleSubmit: handlePasswordSubmit, errors: passwordErrors } = useForm({
     validationSchema: userPasswordValidationSchema
 })
+
+const { value: old_password } = useField('old_password')
+const { value: password } = useField('password')
+const { value: confirm_password } = useField('confirm_password')
 
 onMounted(() => {
     setValues({
@@ -136,13 +148,6 @@ onMounted(() => {
 })
 
 
-const { value: first_name } = useField('first_name')
-const { value: last_name } = useField('last_name')
-const { value: email } = useField('email')
-const { value: old_password } = useField('old_password')
-const { value: password } = useField('password')
-const { value: confirm_password } = useField('confirm_password')
-
 
 const activeTab = ref('User-Info')
 
@@ -151,9 +156,27 @@ const onSubmit = handleSubmit(async (value) => {
 
     if (response == true) {
         toast("Profile updated successful!", 'success')
-        toggleModal()
     } else {
         toast(response, 'error')
     }
 })
+
+const onPasswordSubmit = handlePasswordSubmit(async (value) => {
+    const response = await userStore.updatePassword({
+        oldPassword: value.old_password,
+        newPassword: value.password
+    })
+
+    if (response == true) {
+        toast("Password updated successful!", 'success')
+        setTimeout(() => {
+            userStore.logout()
+            router.push('/');
+        }, 3000)
+
+    } else {
+        toast(response, 'error')
+    }
+})
+
 </script>

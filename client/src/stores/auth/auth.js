@@ -58,7 +58,7 @@ export const useAuthStore = defineStore('auth', {
 
             } catch (error) {
                 console.error('Login error:', error);
-                this.error = error.response?.data?.message || error.response?.data?.message || 'Login failed';
+                this.error = error.response?.data?.message || error.response?.data?.message || 'Incorrect password or email!';
             } finally {
                 this.isLoading = false;
             }
@@ -87,7 +87,31 @@ export const useAuthStore = defineStore('auth', {
                 this.isLoading = false;
             }
 
-            if (this.user) {
+            if (!this.error) {
+                return true
+            }
+            return this.error
+        },
+
+        async updatePassword(credentials) {
+            this.isLoading = true;
+            this.error = null;
+
+            try {
+                const response = await api.put(`users/update-password/${this.user.id}`, credentials);
+                if (response.status === 200) {
+                    return true
+                } else {
+                    this.error = response.data
+                }
+            } catch (error) {
+                console.error('Password update error:', error);
+                this.error = error.response?.data?.message || 'Updating password failed';
+            } finally {
+                this.isLoading = false;
+            }
+
+            if (!this.error) {
                 return true
             }
             return this.error
