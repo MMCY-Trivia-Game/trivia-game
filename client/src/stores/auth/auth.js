@@ -69,6 +69,30 @@ export const useAuthStore = defineStore('auth', {
             return this.error
         },
 
+        async updateProfileInfo(credentials) {
+            this.isLoading = true;
+            this.error = null;
+
+            try {
+                const response = await api.put(`users/${this.user.id}`, credentials);
+                Object.keys(credentials).forEach(key => {
+                    if (response.data.hasOwnProperty(key)) {
+                        this.user[key] = response.data[key];
+                    }
+                });
+            } catch (error) {
+                console.error('profile update error:', error);
+                this.error = error.response?.data?.message || error.response?.data?.message || 'Updating profile failed';
+            } finally {
+                this.isLoading = false;
+            }
+
+            if (this.user) {
+                return true
+            }
+            return this.error
+        },
+
         async refreshToken() {
             this.isLoading = true;
             this.error = null;
