@@ -26,12 +26,29 @@ api.interceptors.request.use(
 );
 
 api.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        if (error.response?.status === 401) {
-            const authStore = useAuthStore();
-            authStore.logout();
+    function (response) {
+        return response;
+    },
+    async function (error) {
+
+        const originalRequest = error.config;
+
+        if (error.response && error.response.status === 403 && !originalRequest._retry) {
+            originalRequest._retry = true;
+
+            try {
+                const authStore = useAuthStore();
+                const response = await authStore.refreshToken()
+                if (response) {
+                    originalRequest.headers['Authorization'] = `Bearer ${authStore.accessToken}`;
+
+                    return axiosInstance(originalRequest);
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
         }
+
         return Promise.reject(error);
     }
 );

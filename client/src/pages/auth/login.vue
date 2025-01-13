@@ -68,10 +68,22 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { useRouter } from 'vue-router'
 import { ref } from "vue"
 import * as z from 'zod'
+import { onMounted } from 'vue';
 
 
 const authStore = useAuthStore()
 const router = useRouter();
+
+onMounted(() => {
+    if (authStore.isTokenValid()) {
+        if (authStore.user.role === 'admin' && authStore.user.is_active) {
+            router.push('/admin');
+        }
+        else if (authStore.user.role === 'creator' && authStore.user.is_active) {
+            router.push('/creator');
+        }
+    }
+})
 
 const validationSchema = toTypedSchema(
     z.object({
