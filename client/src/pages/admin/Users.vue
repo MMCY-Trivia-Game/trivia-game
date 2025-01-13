@@ -105,7 +105,7 @@ import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
 import { CheckCircleIcon, XCircleIcon, PencilSquareIcon } from '@heroicons/vue/24/solid';
 import Button from '@/components/admin-component/ui/PrimaryButton.vue'
 import { useUsersStore } from '@/stores/admin/userStore.js';
-import { useField, useForm, validate } from 'vee-validate'
+import { useField, useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 import { reactive, watch } from 'vue';

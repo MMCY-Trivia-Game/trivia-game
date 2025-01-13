@@ -9,6 +9,7 @@ const questionRoutes = require('./routes/questionRoutes');
 const leaderboardRoutes = require('./routes/leaderboardRoutes');
 const gameRoutes = require('./routes/gameRoutes');
 const userRoutes = require('./routes/userRoutes');
+const adminRoute = require('./routes/adminRoutes')
 
 
 connectDB(); // connect DB
@@ -31,7 +32,7 @@ app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api/questions', questionRoutes);
 app.use('/api/games', gameRoutes);
 app.use('/api/users', userRoutes);
-
+app.use('/api/dashboard', adminRoute)
 // Socket.IO connection for the leaderboard and realtime update
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);

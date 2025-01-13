@@ -46,6 +46,11 @@ const gameSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
-}, { timestamps: true });
+}, {
+    timestamps: {
+        createdAt: 'createdAt',
+        updatedAt: 'updatedAt'
+    }
+});
 
 module.exports = mongoose.model('Game', gameSchema);

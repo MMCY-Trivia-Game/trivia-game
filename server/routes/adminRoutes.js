@@ -1,9 +1,9 @@
 const express = require('express');
-const { registerUser } = requires('../controllers/adminControllers')
+const { dashboardStat } = require('../controllers/adminController')
 const { adminOnly } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-router.route('/register').post(registerUser)
+router.route('/').get(dashboardStat)
 
 module.exports = router;

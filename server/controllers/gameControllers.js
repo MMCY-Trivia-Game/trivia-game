@@ -2,10 +2,11 @@ const Game = require('../models/gameModel');
 
 exports.createGame = async (req, res, next) => {
   try {
-    const { title, maxUsers, game_code } = req.body;
+    const { title, maxUsers, game_code, category } = req.body;
     const game = await Game.create({
       creator_id: req.user.id,
       title,
+      category,
       maxUsers,
       game_code,
     });
