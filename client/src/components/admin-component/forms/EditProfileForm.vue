@@ -59,7 +59,13 @@
                         </div>
 
                         <div class="flex gap-3">
-                            <Button title="Update"></Button>
+                            <fwb-button :disabled="userStore.isLoading"
+                                class="hover:text-white text-white bg-primary hover:bg-secondary" color="alternative"
+                                type="submit" size="lg">
+                                <span v-if="!userStore.isLoading">Update
+                                </span>
+                                <div v-if="userStore.isLoading" class="flex justify-center"><fwb-spinner size="6" /></div>
+                            </fwb-button>
                         </div>
 
                     </div>

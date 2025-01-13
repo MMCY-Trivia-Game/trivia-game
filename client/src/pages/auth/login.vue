@@ -34,14 +34,14 @@
 
                         </div>
 
-                        <div class="flex justify-between items-center mb-4">
+                        <!-- <div class="flex justify-between items-center mb-4">
                             <div>
                                 <input type="checkbox" id="remember" name="remember"
                                     class="h-4 w-4 text-indigo-700 border-primary rounded" />
                                 <label for="remember" class="text-sm text-primary ps-2">Remember me</label>
                             </div>
                             <a href="#" class="text-sm text-primary ">Forgot password?</a>
-                        </div>
+                        </div> -->
 
                         <fwb-button :disabled="authStore.isLoading"
                             class="w-full bg-primary hover:bg-secondary hover:text-white  text-white" color="alternative"

@@ -187,10 +187,10 @@ exports.getUserById = async (req, res) => {
 
 exports.refreshToken = (req, res, next) => {
   try {
-    const { refreshToken } = req.body;
+    const refreshToken = req.body.refresh_token || req.query.refresh_token || req.headers['x-refresh-token'];
+
     if (!refreshToken) {
-      res.status(401);
-      return next(new Error('Refresh token is required!'));
+      return res.status(400).json({ message: 'Refresh token is required!' });
     }
 
     jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, user) => {
