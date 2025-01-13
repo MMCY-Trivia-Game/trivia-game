@@ -1,6 +1,6 @@
 <template>
     <!--Overview card-->
-    <section class="grid grid-cols-1 gap-4 mb-4  md:grid-cols-2 lg:grid-cols-5 ">
+    <section class="grid grid-cols-2 gap-4 mb-4  md:grid-cols-2 lg:grid-cols-5 ">
         <DashboardCard v-for="dashboard in dashboards.dashboardOverViewCard " :title="dashboard.title"
             :icon="dashboard.icon" :number="dashboard.number" />
     </section>
@@ -23,8 +23,8 @@
     </section>
 
     <!---->
-    <section class="mt-5 grid grid-cols-1 gap-4 mb-4  md:grid-cols-1 lg:grid-cols-3">
-        <DashboardGameStatus v-for="status in playerStat" :title="status.title" :number="status.number"
+    <section class="mt-5 gap-4 grid grid-cols-1 w-full mb-4  lg:grid-cols-2">
+        <DashboardGameStatus v-for="status in dashboards.playerStat" :title="status.title" :number="status.number"
             :image="status.image" />
     </section>
 </template>
@@ -145,7 +145,6 @@ const dashboards = computed(() => {
 
 
         },
-        //monthlyGamePlayers
         chartGamePLayed: {
             series: [{
                 name: "Games",
@@ -187,31 +186,22 @@ const dashboards = computed(() => {
                     categories: dashboardStore.stats?.monthlyGamePlayers?.map((item) => item.month + "-" + item.year) || [0],
                 }
             }
-        }
-
+        },
+        playerStat: [
+            {
+                title: 'Average players per game.',
+                number: dashboardStore.stats?.averagePlayerPerGame ? Math.round(dashboardStore.stats?.averagePlayerPerGame[0].averagePlayersPerGame) : 0,
+                image: PlayerImage
+            },
+            {
+                title: 'Average score per player.',
+                number: dashboardStore.stats?.averageScorePerPlayer ? Math.round(dashboardStore.stats?.averageScorePerPlayer[0].overallAverageScore) : 0,
+                image: ScoreImage
+            }
+        ]
     }
 })
 
-
-
-
-const playerStat = ref([
-    {
-        title: 'Average response time.',
-        number: 3,
-        image: ResponseImage
-    },
-    {
-        title: 'Average players per game.',
-        number: 3,
-        image: PlayerImage
-    },
-    {
-        title: 'Average score per player.',
-        number: 3,
-        image: ScoreImage
-    }
-])
 
 
 </script>

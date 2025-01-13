@@ -71,12 +71,50 @@ exports.dashboardStat = asyncHandler(async (req, res) => {
         }
     ]);
 
+    const averagePlayerPerGame = await Game.aggregate([
+        {
+            $group: {
+                _id: null, // Group all documents together
+                averagePlayersPerGame: { $avg: "$maxUsers" } // Calculate the average of maxUsers
+            }
+        },
+        {
+            $project: {
+                _id: 0, // Exclude the _id from the output
+                averagePlayersPerGame: 1
+            }
+        }
+    ]);
+
+    const averageScorePerPlayer = await Leaderboard.aggregate([
+        {
+            $group: {
+                _id: "$user_name", // Group by user_name to calculate average score per player
+                averageScore: { $avg: "$score" } // Calculate the average score for each player
+            }
+        },
+        {
+            $group: {
+                _id: null, // Group all players to calculate the overall average
+                overallAverageScore: { $avg: "$averageScore" } // Calculate the average of the average scores
+            }
+        },
+        {
+            $project: {
+                _id: 0, // Exclude the _id from the output
+                overallAverageScore: 1
+            }
+        }
+    ]);
+
+
 
     res.status(200).json({
         "dashboard": { activeGamesCount, playersCount, questionCount, activeCreatorCount, totalGamesCount },
         "topCategories": topCategories,
-        "monthlyGamePlayers": monthlyGamePlayers
-
+        "monthlyGamePlayers": monthlyGamePlayers,
+        averagePlayerPerGame,
+        averageScorePerPlayer
     })
 
 })
