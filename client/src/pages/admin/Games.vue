@@ -30,7 +30,7 @@
     <!--Game List-->
     <section class=" mt-5 grid grid-cols-3 gap-4 mb-4 md:grid-cols-4 lg:grid-cols-6 h-full">
         <GameListCard v-if="!gameStore.isLoading && gameStore.games.length > 0" v-for="game in gameStore.games"
-            :key="game.id" @click="toggleModal" :title="game.title" :active="game.is_active"
+            :key="game.id" @click="toggleModal(game)" :title="game.title" :active="game.is_active"
             :creator="game.creator_id.first_name + ' ' + game.creator_id.first_name" />
     </section>
 
@@ -46,11 +46,11 @@
 
 
     <!--Modal Game detail-->
-    <GameDetailModal @close="toggleModal" :isShowModal="isShowModal" />
+    <GameDetailModal @close="toggleModal" :game="selectedGame" :isShowModal="isShowModal" />
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 
 import GameListCard from '@/components/admin-component/ui/GameListCard.vue';
 import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
@@ -59,37 +59,21 @@ import { FwbButton, FwbSpinner } from 'flowbite-vue'
 import GameDetailModal from '@/components/admin-component/modal/GameDetailModal.vue'
 import { useGameStore } from '@/stores/admin/gameStore';
 
-//images
-import arcadeImage from '@/assets/gameIcons/arcade.png'
-import controllerImage from '@/assets/gameIcons/controller.png'
-import gameConsoleImage from '@/assets/gameIcons/game-console.png'
-import gamerImage from '@/assets/gameIcons/gamer.png'
-import ghostImage from '@/assets/gameIcons/ghost.png'
-import joystickImage from '@/assets/gameIcons/joystick.png'
-import mushroomImage from '@/assets/gameIcons/mushroom.png'
-import pikachuImage from '@/assets/gameIcons/pikachu.png'
-import { onMounted } from 'vue';
-
 
 const gameStore = useGameStore()
 const isShowModal = ref(false)
 const selectedCategory = ref('All')
 const searchData = ref('')
+const selectedGame = ref(null)
 
 onMounted(async () => {
     await gameStore.fetchGames()
 })
 
-const filteredGames = computed(() => {
-    return gameStore.games.filter(game =>
-        game.title.toLowerCase().includes(searchData.value.toLowerCase())
-    );
-});
-
-const toggleModal = () => {
+const toggleModal = (game) => {
     isShowModal.value = !isShowModal.value
+    selectedGame.value = game
 }
-const gameImages = [arcadeImage, controllerImage, gameConsoleImage, gamerImage, ghostImage, joystickImage, mushroomImage, pikachuImage]
 
 const categories = [
     'All',
