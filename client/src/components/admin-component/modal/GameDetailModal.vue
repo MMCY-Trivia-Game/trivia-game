@@ -52,12 +52,19 @@
             </div>
 
 
-            <GameDeleteModal @close="toggleModal" :isShowModal="isDeleteShowModal" />
+            <GameDeactivateModal :title="game.title" @submit="handleOnDeactivate" :isLoading="gameStore.isLoading"
+                @close="toggleModal" :isShowModal="isDeleteShowModal" />
+            <GameActivateModal :title="game.title" @submit="handleOnActivate" :isLoading="gameStore.isLoading"
+                @close="toggleActivateModal" :isShowModal="isActivateShowModal" />
         </template>
         <template #footer>
             <div class="flex justify-end">
-                <fwb-button @click="toggleModal" color="red">
-                    Delete
+                <fwb-button v-if="game.is_active" @click="toggleModal" color="red">
+                    Deactivate
+                </fwb-button>
+
+                <fwb-button v-else @click="toggleActivateModal"
+                    class=" hover:text-white text-white bg-primary hover:bg-secondary" type="submit" size="lg"> Activate
                 </fwb-button>
             </div>
         </template>
@@ -66,8 +73,14 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
-import GameDeleteModal from '@/components/admin-component/modal/GameDeleteModal.vue'
+import GameDeactivateModal from '@/components/admin-component/modal/GameDeactivateModal.vue'
+import GameActivateModal from '@/components/admin-component/modal/GameActivateModal.vue'
 import { FwbButton, FwbModal } from 'flowbite-vue'
+import toast from '@/components/admin-component/ui/ToastMessage'
+import { useGameStore } from '@/stores/admin/gameStore';
+
+
+const gameStore = useGameStore()
 
 const { isShowModal, game } = defineProps(['isShowModal', 'game'])
 const emit = defineEmits(['close', 'submit']);
@@ -77,8 +90,42 @@ function emitClose() {
 }
 
 const isDeleteShowModal = ref(false)
+const isActivateShowModal = ref(false)
+
 const toggleModal = () => {
     isDeleteShowModal.value = !isDeleteShowModal.value
+}
+
+const toggleActivateModal = () => {
+    isActivateShowModal.value = !isActivateShowModal.value
+}
+
+const handleOnDeactivate = async () => {
+    const response = await gameStore.deactivate(game._id)
+
+    if (response) {
+        toggleModal()
+        emitClose()
+        toast("Game deactivated successfully!", 'success')
+        return
+    }
+
+    toast(response, 'error')
+
+}
+
+const handleOnActivate = async () => {
+    const response = await gameStore.activate(game._id)
+
+    if (response) {
+        toggleActivateModal()
+        emitClose()
+        toast("Game activated successfully!", 'success')
+        return
+    }
+
+    toast(response, 'error')
+
 }
 
 
