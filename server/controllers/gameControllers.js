@@ -17,9 +17,30 @@ exports.createGame = async (req, res, next) => {
 
 exports.getAllGames = async (req, res, next) => {
   try {
-    const games = await Game.find(
-      req.query.is_active ? { is_active: req.query.is_active } : {}
-    ).populate('creator_id', 'first_name last_name email');
+    const { is_active, category, q } = req.query;
+
+    const filter = {};
+    if (category) {
+      filter.category = category;
+    }
+
+    if (is_active) {
+      filter.is_active = is_active;
+    }
+
+    let searchQuery = {};
+
+    if (q) {
+
+      searchQuery = {
+        $or: [
+          { title: { $regex: q, $options: 'i' } },
+          { category: { $regex: q, $options: 'i' } },
+        ],
+      };
+    }
+
+    const games = await Game.find({ ...searchQuery, ...filter }).populate('creator_id', 'first_name last_name email');
     res.json(games);
   } catch (error) {
     next(error);

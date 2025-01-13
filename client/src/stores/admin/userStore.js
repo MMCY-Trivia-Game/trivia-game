@@ -16,7 +16,6 @@ export const useUsersStore = defineStore('userStore', {
             this.isLoading = true;
             this.error = null;
 
-
             try {
                 const response = await api.get(`users?page=${page}${q ? `&q=${q}` : ''}`);
                 this.users = response.data.docs;

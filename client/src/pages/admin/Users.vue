@@ -8,6 +8,7 @@
                     <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
                         <MagnifyingGlassIcon class="text-primary h-4 w-4" />
                     </div>
+                    <p class="text-white">{{ searchData }}</p>
                     <input type="search" v-model="searchData"
                         class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-primary focus:border-primary dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary dark:focus:border-primary"
                         placeholder="Search" required />

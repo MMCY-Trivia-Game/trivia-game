@@ -10,13 +10,14 @@ export const useGameStore = defineStore('gameStore', {
 
 
     actions: {
-        async fetchGames(category = null) {
+        async fetchGames(category = null, q = null) {
             console.log('store', category)
             this.isLoading = true;
             this.error = null
 
+            console.log(`games${q ? `?q=${q}` : `?q=`}${category && category !== 'All' ? `&category=${category}` : ''}`)
             try {
-                const response = await api.get(`games${category && category !== 'All' ? `?category=${category}` : ''}`);
+                const response = await api.get(`games${q ? `?q=${q}` : `?q=`}${category && category !== 'All' ? `&category=${category}` : ''}`);
                 this.games = response.data
             } catch (error) {
                 console.log('Error fetching games:', error);

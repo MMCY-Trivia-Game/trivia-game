@@ -138,10 +138,10 @@ exports.logoutUser = async (req, res, next) => {
 
 exports.getAllUsers = async (req, res, next) => {
   try {
-    const { q } = req.query;  // Extract q from req.query, not req.body
+    const { q } = req.query;
     const options = {
-      page: req.query.page || 1, // Default to page 1 if not provided
-      limit: 10,  // You can adjust the limit as needed
+      page: req.query.page || 1,
+      limit: 10,
       collation: {
         locale: 'en',
       },
@@ -150,7 +150,7 @@ exports.getAllUsers = async (req, res, next) => {
     let searchQuery = {};
 
     if (q) {
-      // Build the search query using regex for case-insensitive search
+
       searchQuery = {
         $or: [
           { first_name: { $regex: q, $options: 'i' } },
