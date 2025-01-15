@@ -120,3 +120,69 @@ exports.dashboardStat = asyncHandler(async (req, res) => {
 })
 
 
+/**
+ * @des Dashboard Stats
+ * @route POST /api/dashboard/games
+ * @access Private
+ */
+exports.getAllGames = async (req, res, next) => {
+    try {
+        const { is_active, category, q } = req.query;
+
+        const options = {
+            page: req.query.page || 1,
+            limit: 18,
+            collation: {
+                locale: 'en',
+            },
+        };
+
+        const filter = {};
+        if (category) {
+            filter.category = category;
+        }
+
+        if (is_active) {
+            filter.is_active = is_active;
+        }
+
+        let searchQuery = {};
+
+        if (q) {
+
+            searchQuery = {
+                $or: [
+                    { title: { $regex: q, $options: 'i' } },
+                    { category: { $regex: q, $options: 'i' } },
+                ],
+            };
+        }
+
+        const result = await Game.paginate({ ...searchQuery, ...filter }, options);
+        const populatedDocs = await Game.populate(result.docs, {
+            path: 'creator_id',
+            select: 'first_name last_name email'
+        });
+
+
+        const response = {
+            docs: populatedDocs,
+            totalDocs: result.totalDocs,
+            limit: result.limit,
+            totalPages: result.totalPages,
+            page: result.page,
+            pagingCounter: result.pagingCounter,
+            hasPrevPage: result.hasPrevPage,
+            hasNextPage: result.hasNextPage,
+            prevPage: result.prevPage,
+            nextPage: result.nextPage
+        };
+
+
+        res.json(response);
+    } catch (error) {
+        next(error);
+    }
+};
+
+

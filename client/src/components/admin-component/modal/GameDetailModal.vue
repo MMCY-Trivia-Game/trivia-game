@@ -18,7 +18,7 @@
 
                 <div class="col-span-1">
                     <small class="text-gray-500">Created By</small>
-                    <p>{{ game.creator_id.first_name }} {{ game.creator_id.last_name }}</p>
+                    <p>{{ game.creator_id?.first_name || 'None' }} {{ game.creator_id?.last_name || 'None' }}</p>
                 </div>
 
                 <div class="col-span-1">

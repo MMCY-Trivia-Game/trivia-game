@@ -28,10 +28,10 @@
     </section>
 
     <!--Game List-->
-    <section class=" mt-5 grid grid-cols-3 gap-4 mb-4 md:grid-cols-4 lg:grid-cols-6 h-full">
+    <section class=" mt-5 grid grid-cols-2 gap-4 mb-4 md:grid-cols-4 lg:grid-cols-6 h-full">
         <GameListCard v-if="!gameStore.isLoading && gameStore.games.length > 0" v-for="game in gameStore.games"
             :key="game.id" @click="toggleModal(game)" :title="game.title" :active="game.is_active"
-            :creator="game?.creator_id?.first_name + ' ' + game?.creator_id?.last_name" />
+            :creator="(game?.creator_id?.first_name || 'None') + ' ' + (game?.creator_id?.last_name || 'None')" />
     </section>
 
     <!-- No game found message -->
@@ -47,15 +47,20 @@
 
     <!--Modal Game detail-->
     <GameDetailModal @close="toggleModal" :game="selectedGame" :isShowModal="isShowModal" />
+
+    <!--pagination-->
+    <div class="text-end p-3">
+        <fwb-pagination class="mt-2" v-model="currentPage" :total-pages="gameStore.totalPages"></fwb-pagination>
+    </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 
 import GameListCard from '@/components/admin-component/ui/GameListCard.vue';
 import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
 import Button from '@/components/admin-component/ui/PrimaryButton.vue'
-import { FwbButton, FwbSpinner } from 'flowbite-vue'
+import { FwbButton, FwbSpinner, FwbPagination } from 'flowbite-vue'
 import GameDetailModal from '@/components/admin-component/modal/GameDetailModal.vue'
 import { useGameStore } from '@/stores/admin/gameStore';
 
@@ -65,10 +70,15 @@ const isShowModal = ref(false)
 const selectedCategory = ref('All')
 const searchData = ref('')
 const selectedGame = ref(null)
+const currentPage = ref(1)
 
 onMounted(async () => {
     await gameStore.fetchGames()
 })
+
+watch(currentPage, async (newPage) => {
+    await gameStore.fetchGames(newPage)
+});
 
 const toggleModal = (game) => {
     isShowModal.value = !isShowModal.value
@@ -92,12 +102,12 @@ const categories = [
 
 const handleOnCategorySelected = async (category) => {
     selectedCategory.value = category
-    await gameStore.fetchGames(category)
+    await gameStore.fetchGames(1, category)
 }
 
 //on search handler
 const onSearch = async () => {
-    await gameStore.fetchGames(selectedCategory.value, searchData.value)
+    await gameStore.fetchGames(1, selectedCategory.value, searchData.value)
 }
 </script>
 

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 const gameSchema = new mongoose.Schema({
     creator_id: {
@@ -52,5 +53,7 @@ const gameSchema = new mongoose.Schema({
         updatedAt: 'updatedAt'
     }
 });
+
+gameSchema.plugin(mongoosePaginate);
 
 module.exports = mongoose.model('Game', gameSchema);

@@ -4,19 +4,27 @@ import { defineStore } from "pinia";
 export const useGameStore = defineStore('gameStore', {
     state: () => ({
         games: [],
-        isLoading: false,
-        error: null
+        currentPage: 0,
+        totalPages: null,
+        limit: 0,
+        error: null,
+        isLoading: false
     }),
 
 
     actions: {
-        async fetchGames(category = null, q = null) {
+        async fetchGames(page = 1, category = null, q = null) {
             this.isLoading = true;
             this.error = null
 
+            console.log(`dashboard/games?page=${page}${q ? `&q=${q}` : ''}${category && category !== 'All' ? `&category=${category}` : ''}`)
+
             try {
-                const response = await api.get(`games${q ? `?q=${q}` : `?q=`}${category && category !== 'All' ? `&category=${category}` : ''}`);
-                this.games = response.data
+                const response = await api.get(`dashboard/games?page=${page}${q ? `&q=${q}` : ''}${category && category !== 'All' ? `&category=${category}` : ''}`);
+                this.games = response.data.docs;
+                this.totalPages = response.data.totalPages;
+                this.currentPage = response.data.page
+                this.limit = response.data.limit
             } catch (error) {
                 console.log('Error fetching games:', error);
                 this.error = error.response?.data?.errors.map((err) => err.msg).join(",") || error.response?.data?.message || 'Failed to fetch games';
