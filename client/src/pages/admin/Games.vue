@@ -31,7 +31,7 @@
     <section class=" mt-5 grid grid-cols-3 gap-4 mb-4 md:grid-cols-4 lg:grid-cols-6 h-full">
         <GameListCard v-if="!gameStore.isLoading && gameStore.games.length > 0" v-for="game in gameStore.games"
             :key="game.id" @click="toggleModal(game)" :title="game.title" :active="game.is_active"
-            :creator="game.creator_id.first_name + ' ' + game.creator_id.first_name" />
+            :creator="game?.creator_id?.first_name + ' ' + game?.creator_id?.last_name" />
     </section>
 
     <!-- No game found message -->
