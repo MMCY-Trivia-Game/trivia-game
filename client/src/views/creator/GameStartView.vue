@@ -2,21 +2,15 @@
 import { ref, onMounted, watch, computed } from "vue";
 import QuestionWithoutAnswerCard from "@/components/creator/QuestionWithoutAnswerCard.vue";
 import router from "@/router/route";
-const gameDetails = ref({
-  title: "Trivia Challenge",
-  players: [
-    { name: "Alice", answered: false },
-    { name: "Bob", answered: false },
-    { name: "Charlie", answered: false },
-    { name: "Daisy", answered: false },
-  ],
-  question: {
-    text: "What is the capital of France?",
-    options: ["Berlin", "Madrid", "Paris", "Rome"],
-    correctOption: 2,
-    timeLimit: 10,
-  },
-});
+import { useGamesStore } from "@/stores/creator/gamesStore";
+import { useQuestionsStore } from "@/stores/creator/questionsStore";
+import { useRoute } from "vue-router";
+
+const gamesStore = useGamesStore();
+const questionsStore = useQuestionsStore();
+const route = useRoute();
+
+const currentQuestionIndex = ref(0);
 
 const countdown = ref(3);
 const timeRemaining = ref(0);
@@ -33,16 +27,16 @@ const formattedTime = computed(() => {
   )}`;
 });
 
-const simulatePlayerResponses = () => {
-  gameDetails.value.players.forEach((player, index) => {
-    setTimeout(() => {
-      if (!player.answered) {
-        player.answered = true;
-        answeredPlayers.value++;
-      }
-    }, Math.random() * gameDetails.value.question.timeLimit * 1000);
-  });
-};
+// const simulatePlayerResponses = () => {
+//   gameDetails.value.players.forEach((player, index) => {
+//     setTimeout(() => {
+//       if (!player.answered) {
+//         player.answered = true;
+//         answeredPlayers.value++;
+//       }
+//     }, Math.random() * gameDetails.value.question.timeLimit * 1000);
+//   });
+// };
 
 watch(answeredPlayers, (newCount) => {
   if (newCount === gameDetails.value.players.length && isQuestionActive.value) {
@@ -63,7 +57,8 @@ const startGameCountdown = () => {
 const startQuestion = () => {
   isCountdownRunning.value = false;
   isQuestionActive.value = true;
-  timeRemaining.value = gameDetails.value.question.timeLimit;
+  timeRemaining.value =
+    questionsStore.questions[questionsStore.currentQuestionIndex].timeLimit;
 
   const interval = setInterval(() => {
     timeRemaining.value--;
@@ -73,15 +68,16 @@ const startQuestion = () => {
     }
   }, 1000);
 
-  simulatePlayerResponses();
+  // simulatePlayerResponses();
 };
 
 const endQuestion = () => {
   isQuestionActive.value = false;
-  router.push("/creator/game/report");
+  router.push(`/creator/game/${gamesStore.selectedGame._id}/report`);
 };
 
-onMounted(() => {
+onMounted(async () => {
+  const questions = await questionsStore.getQuestionsByGameId(route.params.id);
   startGameCountdown();
 });
 </script>
@@ -90,7 +86,9 @@ onMounted(() => {
   <div class="min-h-screen bg-primary text-white">
     <div class="max-w-screen-xl mx-auto p-6">
       <header class="text-center mb-6">
-        <h1 class="text-3xl font-bold text-white">{{ gameDetails.title }}</h1>
+        <h1 class="text-3xl font-bold text-white">
+          {{ gamesStore.selectedGame.title }}
+        </h1>
       </header>
 
       <div
@@ -110,17 +108,21 @@ onMounted(() => {
           <p class="text-4xl font-bold">{{ formattedTime }}</p>
         </div>
 
-        <QuestionWithoutAnswerCard :question="gameDetails.question" />
+        <QuestionWithoutAnswerCard
+          :question="
+            questionsStore.questions[questionsStore.currentQuestionIndex]
+          "
+        />
 
         <div class="mt-8">
           <p class="text-lg font-semibold">Players Answered</p>
           <p class="text-4xl font-bold">
-            {{ answeredPlayers }} / {{ gameDetails.players.length }}
+            {{ answeredPlayers }} / {{ gamesStore.playerLength }}
           </p>
 
           <ul class="mt-4 space-y-2">
             <li
-              v-for="player in gameDetails.players"
+              v-for="player in gamesStore.selectedGame.players"
               :key="player.name"
               class="flex justify-between items-center bg-secondary px-4 py-3 rounded-lg"
             >

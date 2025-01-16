@@ -1,36 +1,20 @@
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import QRCodeVue from "qrcode.vue";
-import router from "@/router/route";
+import { useRoute } from "vue-router";
+import { useGamesStore } from "@/stores/creator/gamesStore";
 
-const gameDetails = ref({
-  title: "Trivia Challenge",
-  code: "ABC123",
-  players: [
-    { name: "Alice" },
-    { name: "Bob" },
-    { name: "Charlie" },
-    { name: "Daisy" },
-    { name: "Alice" },
-    { name: "Bob" },
-    { name: "Charlie" },
-    { name: "Daisy" },
-    { name: "Alice" },
-    { name: "Bob" },
-    { name: "Charlie" },
-    { name: "Daisy" },
-    { name: "Alice" },
-    { name: "Bob" },
-    { name: "Charlie" },
-    { name: "Daisy" },
-    { name: "Alice" },
-    { name: "Bob" },
-  ],
-});
+const route = useRoute();
+const gamesStore = useGamesStore();
 
 const startGame = () => {
-  router.push("/creator/game/start");
+  gamesStore.startGame();
 };
+
+onMounted(() => {
+  gamesStore.getGameById(route.params.id);
+  gamesStore.listenForPlayersUpdates();
+});
 </script>
 
 <template>
@@ -39,7 +23,7 @@ const startGame = () => {
       <div class="max-w-screen-lg mx-auto p-6">
         <header class="text-center mb-8">
           <h1 class="text-3xl font-bold text-white">
-            {{ gameDetails.title }}
+            {{ gamesStore.selectedGame.title }}
           </h1>
         </header>
 
@@ -51,14 +35,14 @@ const startGame = () => {
             <div
               class="flex items-center justify-center bg-none rounded-lg text-5xl font-bold"
             >
-              {{ gameDetails.code }}
+              {{ gamesStore.selectedGame.game_code }}
             </div>
           </div>
 
           <div class="bg-secondary rounded-lg shadow-lg">
             <div class="bg-white p-2 rounded-lg shadow-lg">
               <QRCodeVue
-                :value="gameDetails.code"
+                :value="`http://localhost:3000/${gamesStore.selectedGame.game_code}`"
                 size="150"
                 fgColor="#ffffff"
                 bgColor="#2A004E"
@@ -69,7 +53,7 @@ const startGame = () => {
 
           <div class="text-center">
             <p class="text-lg font-semibold">Players Joined</p>
-            <p class="text-4xl font-bold">{{ gameDetails.players.length }}</p>
+            <p class="text-4xl font-bold">{{ gamesStore.players.length }}</p>
           </div>
         </section>
 
@@ -79,7 +63,7 @@ const startGame = () => {
             class="space-y-4 bg-secondary rounded-lg px-6 py-5 overflow-y-auto max-h-96"
           >
             <li
-              v-for="player in gameDetails.players"
+              v-for="player in gamesStore.players"
               :key="player.name"
               class="flex items-center justify-center rounded-lg"
             >

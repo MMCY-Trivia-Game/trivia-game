@@ -2,6 +2,10 @@
 import CategoryList from "@/components/creator/CategoryList.vue";
 import NavBar from "@/components/creator/NavBar.vue";
 import HomeJumbotron from "@/components/creator/HomeJumbotron.vue";
+import Spinner from "@/components/creator/Spinner.vue";
+import { useGamesStore } from "@/stores/creator/gamesStore";
+
+const gamesStore = useGamesStore();
 </script>
 <template>
   <div>
@@ -9,6 +13,7 @@ import HomeJumbotron from "@/components/creator/HomeJumbotron.vue";
       <NavBar />
       <div class="max-w-screen-xl mx-auto p-6">
         <HomeJumbotron />
+        <Spinner v-if="gamesStore.loading" />
         <CategoryList />
       </div>
     </div>

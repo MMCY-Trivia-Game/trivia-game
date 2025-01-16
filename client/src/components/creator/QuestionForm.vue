@@ -11,7 +11,7 @@ const newQuestion = ref({
   text: "",
   options: ["", ""],
   correctOptionId: null,
-  timeLimit: 30,
+  timeLimit: 15,
 });
 
 const errors = ref({

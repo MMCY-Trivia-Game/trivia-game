@@ -4,6 +4,8 @@ import QuestionCard from "./QuestionCard.vue";
 const props = defineProps({
   questions: Array,
 });
+
+console.log(props.questions);
 </script>
 
 <template>

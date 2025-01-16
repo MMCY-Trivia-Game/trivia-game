@@ -1,475 +1,95 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { useGamesStore } from './gamesStore';
+import { QUESTIONS_URL, GAMES_URL } from '@/Constant';
+
+// const userToken =
+//   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N2ZkMDY4NTBhOGE3YzQ5YmY1YzRhZCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTczNjc1NDM0MiwiZXhwIjoxNzM4MDUwMzQyfQ.u8_tWA-KEgOdSIeWz5cavw-5F3VgXP0E992kRq8-bg8';
+
+const userToken =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N2ZkMTI5NTBhOGE3YzQ5YmY1YzRiNiIsInJvbGUiOiJjcmVhdG9yIiwiaWF0IjoxNzM2ODQ3MDE5LCJleHAiOjE3MzgxNDMwMTl9.l2-9-HikJM2oDYZiIKdDOdRYJgygsyY1-l03ET8Z2k4';
 
 export const useQuestionsStore = defineStore('questions', () => {
   const gamesStore = useGamesStore();
-  const questions = ref([
-    {
-      _id: 'q1',
-      text: 'What is the capital of France?',
-      timeLimit: 15,
-      option: ['Berlin', 'Madrid', 'Paris', 'Rome'],
-      correctOptionId: '2',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b6f',
-    },
-    {
-      _id: 'q2',
-      text: 'Which planet is known as the Red Planet?',
-      timeLimit: 10,
-      option: ['Earth', 'Mars', 'Jupiter', 'Saturn'],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b6f',
-    },
-    {
-      _id: 'q3',
-      text: "Who wrote 'Hamlet'?",
-      timeLimit: 20,
-      option: [
-        'Charles Dickens',
-        'William Shakespeare',
-        'Jane Austen',
-        'Leo Tolstoy',
-      ],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b6f',
-    },
-    {
-      _id: 'q4',
-      text: 'What is 5 + 7?',
-      timeLimit: 10,
-      option: ['10', '11', '12', '13'],
-      correctOptionId: '2',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b60',
-    },
-    {
-      _id: 'q5',
-      text: 'What is the square root of 64?',
-      timeLimit: 15,
-      option: ['6', '7', '8', '9'],
-      correctOptionId: '2',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b60',
-    },
-    {
-      _id: 'q6',
-      text: 'What is the largest ocean on Earth?',
-      timeLimit: 10,
-      option: [
-        'Atlantic Ocean',
-        'Indian Ocean',
-        'Pacific Ocean',
-        'Arctic Ocean',
-      ],
-      correctOptionId: '2',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b61',
-    },
-    {
-      _id: 'q7',
-      text: 'Which gas do plants primarily use for photosynthesis?',
-      timeLimit: 15,
-      option: ['Oxygen', 'Nitrogen', 'Carbon Dioxide', 'Hydrogen'],
-      correctOptionId: '2',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b61',
-    },
-    {
-      _id: 'q8',
-      text: 'What is the boiling point of water at sea level?',
-      timeLimit: 20,
-      option: ['90°C', '100°C', '110°C', '120°C'],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b61',
-    },
-    {
-      _id: 'q9',
-      text: 'Who was the first president of the United States?',
-      timeLimit: 15,
-      option: [
-        'Thomas Jefferson',
-        'Abraham Lincoln',
-        'George Washington',
-        'John Adams',
-      ],
-      correctOptionId: '2',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b62',
-    },
-    {
-      _id: 'q10',
-      text: 'In what year did World War II end?',
-      timeLimit: 20,
-      option: ['1945', '1939', '1942', '1948'],
-      correctOptionId: '0',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b62',
-    },
-    {
-      _id: 'q11',
-      text: "What is the synonym of 'fast'?",
-      timeLimit: 15,
-      option: ['Slow', 'Quick', 'Bright', 'Heavy'],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b63',
-    },
-    {
-      _id: 'q12',
-      text: "What is the plural form of 'mouse'?",
-      timeLimit: 10,
-      option: ['Mice', 'Mousees', 'Mouses', 'Mouse'],
-      correctOptionId: '0',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b63',
-    },
-    {
-      _id: 'q13',
-      text: 'What is the chemical symbol for water?',
-      timeLimit: 10,
-      option: ['O2', 'H2O', 'CO2', 'NaCl'],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b64',
-    },
-    {
-      _id: 'q14',
-      text: "What planet is known as the 'Blue Planet'?",
-      timeLimit: 15,
-      option: ['Mars', 'Earth', 'Venus', 'Neptune'],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b64',
-    },
-    {
-      _id: 'q15',
-      text: "What is the primary gas in Earth's atmosphere?",
-      timeLimit: 20,
-      option: ['Oxygen', 'Nitrogen', 'Carbon Dioxide', 'Hydrogen'],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b64',
-    },
-    {
-      _id: 'q16',
-      text: 'Which artist painted the Mona Lisa?',
-      timeLimit: 15,
-      option: [
-        'Leonardo da Vinci',
-        'Vincent van Gogh',
-        'Pablo Picasso',
-        'Claude Monet',
-      ],
-      correctOptionId: '0',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b6f',
-    },
-    {
-      _id: 'q17',
-      text: 'What is the freezing point of water?',
-      timeLimit: 10,
-      option: ['0°C', '32°C', '100°C', '50°C'],
-      correctOptionId: '0',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b6f',
-    },
-    {
-      _id: 'q18',
-      text: 'What is the capital of Germany?',
-      timeLimit: 10,
-      option: ['Berlin', 'Munich', 'Hamburg', 'Frankfurt'],
-      correctOptionId: '0',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b60',
-    },
-    {
-      _id: 'q19',
-      text: 'What is 12 x 12?',
-      timeLimit: 15,
-      option: ['120', '144', '132', '124'],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b60',
-    },
-    {
-      _id: 'q20',
-      text: 'What is the smallest prime number?',
-      timeLimit: 15,
-      option: ['1', '2', '3', '5'],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b60',
-    },
-    {
-      _id: 'q21',
-      text: 'What is the hottest planet in the solar system?',
-      timeLimit: 15,
-      option: ['Mars', 'Venus', 'Mercury', 'Jupiter'],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b61',
-    },
-    {
-      _id: 'q22',
-      text: 'Who discovered gravity?',
-      timeLimit: 20,
-      option: [
-        'Albert Einstein',
-        'Isaac Newton',
-        'Galileo Galilei',
-        'Nikola Tesla',
-      ],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b61',
-    },
-    {
-      _id: 'q23',
-      text: 'What is the longest river in the world?',
-      timeLimit: 20,
-      option: ['Amazon', 'Nile', 'Yangtze', 'Mississippi'],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b61',
-    },
-    {
-      _id: 'q24',
-      text: 'Who invented the telephone?',
-      timeLimit: 15,
-      option: [
-        'Alexander Graham Bell',
-        'Thomas Edison',
-        'Nikola Tesla',
-        'Guglielmo Marconi',
-      ],
-      correctOptionId: '0',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b62',
-    },
-    {
-      _id: 'q25',
-      text: 'What is the currency of Japan?',
-      timeLimit: 15,
-      option: ['Dollar', 'Yen', 'Euro', 'Pound'],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b62',
-    },
-    {
-      _id: 'q26',
-      text: 'What is the largest mammal on Earth?',
-      timeLimit: 20,
-      option: ['Elephant', 'Blue Whale', 'Giraffe', 'Hippopotamus'],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b62',
-    },
-    {
-      _id: 'q27',
-      text: 'Who painted the Sistine Chapel?',
-      timeLimit: 20,
-      option: ['Leonardo da Vinci', 'Michelangelo', 'Raphael', 'Donatello'],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b63',
-    },
-    {
-      _id: 'q28',
-      text: 'Which continent has the most countries?',
-      timeLimit: 20,
-      option: ['Asia', 'Africa', 'Europe', 'South America'],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b63',
-    },
-    {
-      _id: 'q29',
-      text: 'What is the capital of Canada?',
-      timeLimit: 20,
-      option: ['Toronto', 'Ottawa', 'Vancouver', 'Montreal'],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b64',
-    },
-    {
-      _id: 'q30',
-      text: 'Which metal is the best conductor of electricity?',
-      timeLimit: 15,
-      option: ['Gold', 'Silver', 'Copper', 'Aluminum'],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b64',
-    },
-    {
-      _id: 'q31',
-      text: 'Which is the smallest country in the world?',
-      timeLimit: 15,
-      option: ['Monaco', 'Vatican City', 'Malta', 'Liechtenstein'],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b6f',
-    },
-    {
-      _id: 'q32',
-      text: 'What is the chemical symbol for gold?',
-      timeLimit: 10,
-      option: ['Au', 'Ag', 'Pb', 'Pt'],
-      correctOptionId: '0',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b6f',
-    },
-    {
-      _id: 'q33',
-      text: 'What is 15 * 3?',
-      timeLimit: 15,
-      option: ['30', '45', '50', '60'],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b60',
-    },
-    {
-      _id: 'q34',
-      text: 'What is the capital of Italy?',
-      timeLimit: 10,
-      option: ['Florence', 'Rome', 'Milan', 'Venice'],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b60',
-    },
-    {
-      _id: 'q35',
-      text: 'What is the largest desert in the world?',
-      timeLimit: 20,
-      option: ['Sahara', 'Antarctica', 'Arctic', 'Gobi'],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b60',
-    },
-    {
-      _id: 'q36',
-      text: 'Who developed the theory of relativity?',
-      timeLimit: 15,
-      option: [
-        'Isaac Newton',
-        'Albert Einstein',
-        'Galileo Galilei',
-        'Marie Curie',
-      ],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b61',
-    },
-    {
-      _id: 'q37',
-      text: 'Which planet is closest to the sun?',
-      timeLimit: 10,
-      option: ['Venus', 'Mercury', 'Earth', 'Mars'],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b61',
-    },
-    {
-      _id: 'q38',
-      text: 'What is the speed of light?',
-      timeLimit: 20,
-      option: ['299,792 km/s', '150,000 km/s', '299,792 m/s', '150,000 m/s'],
-      correctOptionId: '0',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b61',
-    },
-    {
-      _id: 'q39',
-      text: 'Who discovered penicillin?',
-      timeLimit: 20,
-      option: [
-        'Alexander Fleming',
-        'Marie Curie',
-        'Louis Pasteur',
-        'Edward Jenner',
-      ],
-      correctOptionId: '0',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b62',
-    },
-    {
-      _id: 'q40',
-      text: 'What is the capital of Australia?',
-      timeLimit: 15,
-      option: ['Sydney', 'Melbourne', 'Canberra', 'Brisbane'],
-      correctOptionId: '2',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b62',
-    },
-    {
-      _id: 'q41',
-      text: 'What is the most abundant element in the universe?',
-      timeLimit: 15,
-      option: ['Oxygen', 'Hydrogen', 'Carbon', 'Helium'],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b63',
-    },
-    {
-      _id: 'q42',
-      text: "Who wrote 'Pride and Prejudice'?",
-      timeLimit: 20,
-      option: [
-        'Jane Austen',
-        'Charlotte Bronte',
-        'Emily Bronte',
-        'George Eliot',
-      ],
-      correctOptionId: '0',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b63',
-    },
-    {
-      _id: 'q43',
-      text: 'What is the square root of 144?',
-      timeLimit: 10,
-      option: ['10', '12', '14', '16'],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b64',
-    },
-    {
-      _id: 'q44',
-      text: 'What is the longest mountain range in the world?',
-      timeLimit: 20,
-      option: ['Himalayas', 'Andes', 'Rockies', 'Alps'],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b64',
-    },
-    {
-      _id: 'q45',
-      text: 'What is the currency of the United Kingdom?',
-      timeLimit: 10,
-      option: ['Euro', 'Pound Sterling', 'Dollar', 'Yen'],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b64',
-    },
-    {
-      _id: 'q46',
-      text: 'What is the smallest unit of life?',
-      timeLimit: 15,
-      option: ['Organ', 'Cell', 'Molecule', 'Atom'],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b6f',
-    },
-    {
-      _id: 'q47',
-      text: "Which continent is known as the 'Dark Continent'?",
-      timeLimit: 15,
-      option: ['Asia', 'Africa', 'South America', 'Australia'],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b6f',
-    },
-    {
-      _id: 'q48',
-      text: 'What is the capital of Spain?',
-      timeLimit: 10,
-      option: ['Barcelona', 'Madrid', 'Seville', 'Valencia'],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b60',
-    },
-    {
-      _id: 'q49',
-      text: 'What is the cube root of 27?',
-      timeLimit: 10,
-      option: ['2', '3', '4', '5'],
-      correctOptionId: '1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b60',
-    },
-    {
-      _id: 'q50',
-      text: "Who painted 'Starry Night'?",
-      timeLimit: 15,
-      option: [
-        'Vincent van Gogh',
-        'Claude Monet',
-        'Pablo Picasso',
-        'Leonardo da Vinci',
-      ],
-      correctOptionId: '0',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b60',
-    },
-  ]);
+  const questions = ref([]);
+  const currentQuestionIndex = ref(0);
+  const lastQuestion = ref(false);
+  const loading = ref(false);
+  const error = ref(null);
 
-  function getQuestionsByGame(game) {
-    // const game = gamesStore.getGameById(gameId);
-    // console.log(game);
+  function incrementQuestionIndex() {
+    currentQuestionIndex.value++;
+    if (currentQuestionIndex.value === questions.value.length - 2) {
+      lastQuestion.value = true;
+    }
+  }
 
-    let filteredquestions = [];
-    filteredquestions = questions.value.filter((question) =>
-      game.question_ids.includes(question._id)
-    );
-    return filteredquestions;
+  async function getQuestionsByGameId(gameId) {
+    try {
+      loading.value = true;
+      const game = await gamesStore.getGameById(gameId);
+      if (!game) {
+        console.log('Game does not exist');
+      }
+
+      questions.value = [];
+      const fetchedQuestions = await Promise.all(
+        game.question_ids.map(async (id) => {
+          const response = await fetch(`${QUESTIONS_URL}/${id}`, {
+            headers: {
+              Authorization: `Bearer ${userToken}`,
+            },
+          });
+          return response.json();
+        })
+      );
+      questions.value = fetchedQuestions;
+      console.log(questions.value);
+      return questions.value;
+    } catch (err) {
+      error.value = err;
+      console.log('Failed to Fetch questions by game!', err);
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  async function createQuestion(question) {
+    try {
+      loading.value = true;
+      const response = await fetch(`${QUESTIONS_URL}/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${userToken}`,
+        },
+        body: JSON.stringify({
+          text: question.text,
+          options: question.options,
+          correctOptionId: question.correctOptionId,
+          timeLimit: question.timeLimit,
+        }),
+      });
+
+      const data = await response.json();
+      console.log(data);
+      return data;
+    } catch (err) {
+      error.value = err;
+      console.log('Failed to Create a question', err);
+    } finally {
+      loading.value = false;
+    }
   }
 
   return {
     questions,
-    getQuestionsByGame,
+    currentQuestionIndex,
+    lastQuestion,
+    loading,
+    error,
+    incrementQuestionIndex,
+    getQuestionsByGameId,
+    createQuestion,
   };
 });

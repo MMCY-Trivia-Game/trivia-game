@@ -3,6 +3,8 @@ const {
   createGame,
   getAllGames,
   getGameById,
+  getMyGames,
+  getGamesByCategory,
   getGamesByCreatorId,
   updateGame,
   activateGame,
@@ -21,7 +23,16 @@ const router = express.Router();
 
 router.get('/', protect, adminOnly, getAllGames);
 
+router.get('/my', protect, creatorOnly, getMyGames);
+
 router.get('/:id', protect, creatorOrAdminOnly, getGameById);
+
+router.get(
+  '/category/:category',
+  protect,
+  creatorOrAdminOnly,
+  getGamesByCategory
+);
 
 router.get('/creator/:id', protect, creatorOrAdminOnly, getGamesByCreatorId);
 

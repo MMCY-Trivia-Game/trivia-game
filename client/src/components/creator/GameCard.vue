@@ -16,6 +16,8 @@ const props = defineProps({
     >
       {{ game.title }}
     </h5>
-    <p className="text-sm text-gray-400 truncate">By John Doe</p>
+    <p className="text-sm text-gray-400 truncate">
+      By {{ game.creator_id.first_name }} {{ game.creator_id.last_name }}
+    </p>
   </RouterLink>
 </template>

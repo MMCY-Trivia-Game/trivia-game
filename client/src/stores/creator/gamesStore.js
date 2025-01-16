@@ -1,234 +1,221 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
+import { io } from 'socket.io-client';
+import { GAMES_URL } from '@/Constant';
+import router from '@/router/route';
+import { useQuestionsStore } from './questionsStore';
+
+// const userToken =
+//   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N2ZkMDY4NTBhOGE3YzQ5YmY1YzRhZCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTczNjc1NDM0MiwiZXhwIjoxNzM4MDUwMzQyfQ.u8_tWA-KEgOdSIeWz5cavw-5F3VgXP0E992kRq8-bg8';
+const userToken =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N2ZkMTI5NTBhOGE3YzQ5YmY1YzRiNiIsInJvbGUiOiJjcmVhdG9yIiwiaWF0IjoxNzM2ODQ3MDE5LCJleHAiOjE3MzgxNDMwMTl9.l2-9-HikJM2oDYZiIKdDOdRYJgygsyY1-l03ET8Z2k4';
+
+const socket = io('http://localhost:5000');
 
 export const useGamesStore = defineStore('games', () => {
-  const games = ref([
-    {
-      _id: 'g1',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b6f',
-      title: 'Trivia Challenge',
-      maxUsers: 5,
-      category: 'trivia',
-      game_code: 10101,
-      question_ids: ['q1', 'q2', 'q3'],
-      is_active: true,
-    },
-    {
-      _id: 'g2',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b60',
-      title: 'Math Battle',
-      maxUsers: 4,
-      category: 'math',
-      game_code: 20202,
-      question_ids: ['q4', 'q5'],
-      is_active: true,
-    },
-    {
-      _id: 'g3',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b61',
-      title: 'Quick Quiz',
-      maxUsers: 3,
-      category: 'quiz',
-      game_code: 30303,
-      question_ids: ['q6', 'q7', 'q8'],
-      is_active: true,
-    },
-    {
-      _id: 'g4',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b62',
-      title: 'History Buffs',
-      maxUsers: 6,
-      category: 'history',
-      game_code: 40404,
-      question_ids: ['q9', 'q10'],
-      is_active: true,
-    },
-    {
-      _id: 'g5',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b63',
-      title: 'Word Wizard',
-      maxUsers: 8,
-      category: 'word games',
-      game_code: 50505,
-      question_ids: ['q11', 'q12'],
-      is_active: true,
-    },
-    {
-      _id: 'g6',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b64',
-      title: 'Science Explorer',
-      maxUsers: 10,
-      category: 'science',
-      game_code: 60606,
-      question_ids: ['q13', 'q14', 'q15'],
-      is_active: true,
-    },
-    {
-      _id: 'g7',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b65',
-      title: 'Trivia Night',
-      maxUsers: 5,
-      category: 'trivia',
-      game_code: 70707,
-      question_ids: ['q16', 'q17'],
-      is_active: true,
-    },
-    {
-      _id: 'g8',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b66',
-      title: 'Math Marathon',
-      maxUsers: 4,
-      category: 'math',
-      game_code: 80808,
-      question_ids: ['q18', 'q19'],
-      is_active: true,
-    },
-    {
-      _id: 'g9',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b67',
-      title: 'Quiz Quest',
-      maxUsers: 3,
-      category: 'quiz',
-      game_code: 90909,
-      question_ids: ['q20', 'q21', 'q22'],
-      is_active: true,
-    },
-    {
-      _id: 'g10',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b68',
-      title: 'History Masters',
-      maxUsers: 6,
-      category: 'history',
-      game_code: 10110,
-      question_ids: ['q23', 'q24', 'q25'],
-      is_active: true,
-    },
-    {
-      _id: 'g11',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b69',
-      title: 'Word Puzzles',
-      maxUsers: 8,
-      category: 'word games',
-      game_code: 11111,
-      question_ids: ['q26', 'q27'],
-      is_active: true,
-    },
-    {
-      _id: 'g12',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b70',
-      title: 'Science Trivia',
-      maxUsers: 10,
-      category: 'science',
-      game_code: 12121,
-      question_ids: ['q28', 'q29', 'q30'],
-      is_active: true,
-    },
-    {
-      _id: 'g13',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b71',
-      title: 'Trivia Frenzy',
-      maxUsers: 5,
-      category: 'trivia',
-      game_code: 13131,
-      question_ids: ['q31', 'q32'],
-      is_active: true,
-    },
-    {
-      _id: 'g14',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b72',
-      title: 'Math Fun',
-      maxUsers: 4,
-      category: 'math',
-      game_code: 14141,
-      question_ids: ['q33', 'q34'],
-      is_active: true,
-    },
-    {
-      _id: 'g15',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b73',
-      title: 'Ultimate Quiz',
-      maxUsers: 3,
-      category: 'quiz',
-      game_code: 15151,
-      question_ids: ['q35', 'q36', 'q37'],
-      is_active: true,
-    },
-    {
-      _id: 'g16',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b74',
-      title: 'History Legends',
-      maxUsers: 6,
-      category: 'history',
-      game_code: 16161,
-      question_ids: ['q38', 'q39', 'q40'],
-      is_active: true,
-    },
-    {
-      _id: 'g17',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b75',
-      title: 'Word Challenges',
-      maxUsers: 8,
-      category: 'word games',
-      game_code: 17171,
-      question_ids: ['q41', 'q42'],
-      is_active: true,
-    },
-    {
-      _id: 'g18',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b76',
-      title: 'Science Wonders',
-      maxUsers: 10,
-      category: 'science',
-      game_code: 18181,
-      question_ids: ['q43', 'q44', 'q45'],
-      is_active: true,
-    },
-    {
-      _id: 'g19',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b77',
-      title: 'Trivia Blast',
-      maxUsers: 5,
-      category: 'trivia',
-      game_code: 19191,
-      question_ids: ['q46', 'q47'],
-      is_active: true,
-    },
-    {
-      _id: 'g20',
-      creator_id: '63b2a2d45f7c6c1a4b5e4b78',
-      title: 'Math Mania',
-      maxUsers: 4,
-      category: 'math',
-      game_code: 20202,
-      question_ids: ['q48', 'q49', 'q50'],
-      is_active: true,
-    },
-  ]);
+  const questionsStore = useQuestionsStore();
+  const games = ref([]);
+  const gamesByCategory = ref([]);
+  const selectedGame = ref({});
   const categories = ref([
-    'Trivia',
-    'Math',
-    'Quiz',
+    'General Knowledge',
+    'Technology',
     'History',
-    'Word Games',
-    'Science',
+    'Geography',
+    'Entertainment',
+    'Sports',
+    'Culture',
+    'Food and Drink',
+    'Mythology',
+    'Fun',
+    'Others',
   ]);
+  const loading = ref(false);
+  const error = ref(null);
+  const players = ref([]);
+  const gameCode = ref(null);
+  const gameStarted = ref(false);
 
-  function getGameById(gameId) {
-    return games.value.find((g) => g._id === gameId);
+  const playerLength = computed(() => players.value.length);
+
+  async function getGames() {
+    try {
+      loading.value = true;
+      const response = await fetch(`${GAMES_URL}`, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+      const data = await response.json();
+      games.value = data;
+    } catch (err) {
+      error.value = 'Failed To fetch Games!';
+      console.log('Failed To fetch Games!');
+    } finally {
+      loading.value = false;
+    }
   }
 
-  function getGamesByCategory(category) {
-    let filteredGames = [];
-    filteredGames = games.value.filter(
-      (game) => game.category === category.toLowerCase()
-    );
-    return filteredGames;
+  async function getGameById(gameId) {
+    try {
+      loading.value = true;
+      const response = await fetch(`${GAMES_URL}/${gameId}`, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+      const data = await response.json();
+      // console.log(data.game);
+      selectedGame.value = data.game;
+      console.log(selectedGame.value);
+      return data.game;
+    } catch (err) {
+      error.value = 'Failed To fetch Game By ID!';
+      console.log(err);
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  async function getMyGames() {
+    try {
+      loading.value = true;
+      const response = await fetch(`${GAMES_URL}/my`, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+
+      const data = await response.json();
+      games.value = data;
+    } catch (err) {
+      error.value = 'Failed to Fetch my games';
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  async function getGamesByCategory(category) {
+    try {
+      loading.value = true;
+      const response = await fetch(`${GAMES_URL}/category/${category}`, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+      const data = await response.json();
+      return data;
+    } catch (err) {
+      error.value = 'Failed to Fetch Games By Category!';
+      console.log('Failed to Fetch Games By Category!', err);
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  async function createGame(game) {
+    try {
+      loading.value = true;
+      const response = await fetch(`${GAMES_URL}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${userToken}`,
+        },
+        body: JSON.stringify({
+          title: game.title,
+          maxUsers: game.maxPlayers,
+          category: game.category,
+        }),
+      });
+
+      const data = await response.json();
+      const newGame = data.game;
+
+      // console.log(selectedGame.value);
+      // console.log(data);
+
+      const questions = await Promise.all(
+        game.questions.map(async (question) => {
+          const q = await questionsStore.createQuestion(question);
+          await addQuestion(newGame._id, q._id);
+          console.log(q);
+        })
+      );
+
+      router.push(`/creator/game/${newGame._id}`);
+
+      // console.log(data.game);
+    } catch (err) {
+      error.value = 'Failed to create a game';
+      console.log('Failed To Create the game', err);
+    } finally {
+      loading.value = false;
+    }
+  }
+
+  async function addQuestion(gameId, questionId) {
+    try {
+      const response = await fetch(`${GAMES_URL}/questions/add/${gameId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${userToken}`,
+        },
+        body: JSON.stringify({
+          question_id: questionId,
+        }),
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  function startGame() {
+    if (!gameCode.value) {
+      socket.emit('joinGame', selectedGame.value.game_code, { name: 'Kaleab' });
+      socket.emit('startGame', selectedGame.value.game_code);
+    }
+  }
+
+  function listenForPlayersUpdates() {
+    socket.on('playerJoined', (data) => {
+      players.value = data.players;
+      gameCode.value = data.gameCode;
+    });
+
+    socket.on('playerLeft', (data) => {
+      players.value = data.players;
+      console.log(`Player left: ${data.player.name}`);
+    });
+
+    socket.on('gameStarted', () => {
+      gameStarted.value = true;
+      router.push(`/creator/game/${selectedGame.value._id}/start`);
+    });
+
+    socket.on('disconnect', () => {
+      console.log(`Player disconnected: ${socket.id}`);
+    });
   }
 
   return {
     games,
+    gamesByCategory,
+    selectedGame,
     categories,
+    loading,
+    error,
+    players,
+    gameCode,
+    gameStarted,
+    playerLength,
+    getGames,
     getGameById,
+    getMyGames,
     getGamesByCategory,
+    createGame,
+    startGame,
+    listenForPlayersUpdates,
   };
 });

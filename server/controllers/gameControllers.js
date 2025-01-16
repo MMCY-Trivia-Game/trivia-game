@@ -1,15 +1,32 @@
 const Game = require('../models/gameModel');
+const mongoose = require('mongoose');
+
+const generateGameCode = async () => {
+  let code;
+  let exists = true;
+  while (exists) {
+    code = Math.floor(100000 + Math.random() * 900000).toString();
+    exists = await Game.exists({ game_code: code });
+  }
+  return code;
+};
 
 exports.createGame = async (req, res, next) => {
   try {
-    const { title, maxUsers, game_code } = req.body;
+    const { title, maxUsers, category } = req.body;
+
+    const game_code = await generateGameCode();
+
+    console.log('first in the game controller');
     const game = await Game.create({
       creator_id: req.user.id,
       title,
       maxUsers,
+      category,
       game_code,
     });
     res.status(201).json({ message: 'Game created successfully!', game });
+    console.log('second in the game controller');
   } catch (error) {
     next(error);
   }
@@ -29,12 +46,56 @@ exports.getAllGames = async (req, res, next) => {
 exports.getGameById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const game = await Game.findById(id);
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400);
+      throw new Error('Invalid game ID format.');
+    }
+
+    const game = await Game.findById(id).populate(
+      'creator_id',
+      'first_name last_name'
+    );
     if (!game) {
       res.status(404);
       throw new Error('Game not found!');
     }
     res.json({ game });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getMyGames = async (req, res, next) => {
+  try {
+    const creator_id = req.user.id;
+    const games = await Game.find({
+      creator_id,
+    }).populate('creator_id', 'first_name last_name');
+
+    if (!games) {
+      res.status(404);
+      throw new Error('Games not found!');
+    }
+
+    res.json(games);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getGamesByCategory = async (req, res, next) => {
+  try {
+    const { category } = req.params;
+    const games = await Game.find({ category }).populate(
+      'creator_id',
+      'first_name last_name'
+    );
+    if (!games) {
+      res.status(404);
+      throw new Error('Game not found!');
+    }
+    res.json(games);
   } catch (error) {
     next(error);
   }

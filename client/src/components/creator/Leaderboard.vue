@@ -1,4 +1,10 @@
 <script setup>
+import { useGamesStore } from "@/stores/creator/gamesStore";
+import { useLeaderboardStore } from "@/stores/creator/leaderboardStore";
+
+const gamesStore = useGamesStore();
+const leaderboardStore = useLeaderboardStore();
+
 const props = defineProps({
   sortedPlayers: Array,
 });
@@ -7,8 +13,13 @@ const props = defineProps({
 <template>
   <div>
     <header class="text-center mb-6">
-      <h1 class="text-3xl font-bold text-white mb-2">Game Title</h1>
-      <h1 class="text-xl font-bold text-gray-400 mb-6">Round: First</h1>
+      <h1 class="text-3xl font-bold text-white mb-2">
+        {{ gamesStore.selectedGame.title }}
+      </h1>
+      <h1 class="text-xl font-bold text-gray-400 mb-6">
+        Round:
+        {{ leaderboardStore.roundsList[leaderboardStore.selectedRoundIndex] }}
+      </h1>
       <h1 class="text-3xl font-bold text-white">Leaderboard</h1>
     </header>
 
@@ -33,10 +44,10 @@ const props = defineProps({
             'border-8 flex items-center justify-center bg-secondary text-white rounded-full font-bold shadow-lg relative',
           ]"
         >
-          {{ player.name.charAt(0) }}
+          {{ player.user_name.charAt(0) }}
         </div>
         <p class="text-base md:text-lg font-semibold truncate">
-          {{ player.name }}
+          {{ player.user_name }}
         </p>
         <span class="text-base font-semibold px-2 rounded-full shadow-lg">
           {{ player.score }}
@@ -55,42 +66,12 @@ const props = defineProps({
             <div
               class="w-10 h-10 flex items-center justify-center bg-tertiary text-white bg-primary rounded-full text-lg font-bold"
             >
-              {{ player.name.charAt(0) }}
+              {{ player.user_name.charAt(0) }}
             </div>
-            <p class="text-lg font-medium">{{ player.name }}</p>
+            <p class="text-lg font-medium">{{ player.user_name }}</p>
           </div>
           <div class="flex items-center space-x-2">
             <p class="text-lg font-semibold">{{ player.score }}</p>
-            <svg
-              v-if="player.trend === 'up'"
-              xmlns="http://www.w3.org/2000/svg"
-              class="w-5 h-5 text-green-500"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M5 15l7-7 7 7"
-              />
-            </svg>
-            <svg
-              v-else
-              xmlns="http://www.w3.org/2000/svg"
-              class="w-5 h-5 text-red-500"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
           </div>
         </li>
       </ul>

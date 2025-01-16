@@ -3,6 +3,9 @@ import { ref } from "vue";
 import GameDetailsForm from "@/components/creator/GameDetailsForm.vue";
 import QuestionForm from "@/components/creator/QuestionForm.vue";
 import router from "@/router/route";
+import { useGamesStore } from "@/stores/creator/gamesStore";
+
+const gamesStore = useGamesStore();
 
 const game = ref({
   title: "",
@@ -26,7 +29,7 @@ const handleAddQuestion = (question) => {
   questions.value.push(question);
 };
 
-const createGame = () => {
+const createGame = async () => {
   if (
     !game.value.title ||
     !game.value.maxPlayers ||
@@ -37,8 +40,7 @@ const createGame = () => {
     return;
   }
   console.log("Game created:", game.value);
-  // TODO: This is supposed to go on the singleGameView
-  router.push("/creator/");
+  await gamesStore.createGame(game.value);
 };
 </script>
 

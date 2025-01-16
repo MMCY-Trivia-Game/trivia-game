@@ -35,9 +35,32 @@ app.use('/api/users', userRoutes);
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
 
-  socket.on('joinGame', (gameId, userName) => {
-    socket.join(`${gameId}`);
-    io.to(gameCode).emit('playerJoined', { playerId: socket.id, userName });
+  const gameRooms = {};
+
+  socket.on('joinGame', (gameCode, player) => {
+    console.log(`Player ${player.name} joined game ${gameCode}`);
+    socket.join(gameCode);
+
+    if (!gameRooms[gameCode]) {
+      gameRooms[gameCode] = {
+        players: [],
+        questionIndex: 0,
+        leaderboard: [],
+        answers: [],
+      };
+    }
+
+    gameRooms[gameCode].players.push({
+      ...player,
+      socketId: socket.id,
+      score: 0,
+    });
+    io.to(gameCode).emit('playerJoined', gameRooms[gameCode].players);
+  });
+
+  socket.on('startGame', (gameCode) => {
+    console.log(`Game ${gameCode} started`);
+    io.to(gameCode).emit('gameStarted');
   });
 
   socket.on('leaderboardUpdate', (data) => {
@@ -45,9 +68,44 @@ io.on('connection', (socket) => {
   });
 
   socket.on('answerQuestion', ({ gameCode, playerId, userName, answer }) => {
-    console.log(`Player ${playerId} answered question in game ${gameCode}`);
-    io.to(gameCode).emit('playerAnswered', { playerId, userName, answer });
+    const game = gameRooms[gameCode];
+    if (!game) return;
+
+    const player = game.players.find((p) => p.socketId === playerId);
+    if (!player) return;
+
+    game.answers.push({ playerId, answer });
+
+    if (game.answers.length <= 3) {
+      const bonusPoints = [30, 20, 10];
+      player.score += bonusPoints[game.answers.length - 1];
+    }
+
+    if (game.answers.length === game.players.length) {
+      emitQuestionResults(gameCode);
+    }
   });
+
+  const emitQuestionResults = (gameCode) => {
+    const game = gameRooms[gameCode];
+    if (!game) return;
+
+    const correctAnswer = 'CorrectAnswerHere';
+    const analytics = game.answers.reduce(
+      (stats, { answer }) => {
+        stats[answer] = (stats[answer] || 0) + 1;
+        return stats;
+      },
+      { correctAnswer }
+    );
+    io.to(gameCode).emit('questionResults', {
+      analytics,
+      leaderboard: game.players.sort((a, b) => b.score - a.score),
+    });
+
+    game.answers = [];
+    game.questionIndex++;
+  };
 
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);

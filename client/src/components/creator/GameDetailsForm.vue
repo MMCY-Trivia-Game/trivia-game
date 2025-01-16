@@ -1,7 +1,9 @@
 <script setup>
 import { ref } from "vue";
+import { useGamesStore } from "@/stores/creator/gamesStore";
 
 const emit = defineEmits(["submit"]);
+const gamesStore = useGamesStore();
 
 const gameDetails = ref({
   title: "",
@@ -9,7 +11,7 @@ const gameDetails = ref({
   category: "",
 });
 
-const categories = ["Trivia", "Science", "Math", "History", "Sports"];
+const categories = gamesStore.categories;
 const errors = ref({
   title: false,
   maxPlayers: false,
@@ -19,7 +21,9 @@ const errors = ref({
 const submitDetails = () => {
   errors.value.title = !gameDetails.value.title;
   errors.value.maxPlayers =
-    !gameDetails.value.maxPlayers || isNaN(gameDetails.value.maxPlayers);
+    !gameDetails.value.maxPlayers ||
+    isNaN(gameDetails.value.maxPlayers) ||
+    gameDetails.value.maxPlayers < 2;
   errors.value.category = !gameDetails.value.category;
 
   if (errors.value.title || errors.value.maxPlayers || errors.value.category) {
@@ -58,7 +62,7 @@ const submitDetails = () => {
         class="w-full px-4 py-2 mt-1 bg-primary text-white rounded-lg focus:ring-2 focus:ring-accent"
       />
       <p v-if="errors.maxPlayers" class="text-red-500 mt-1">
-        Valid number of players is required
+        Valid number of players is required (at least 2 players)
       </p>
     </div>
 

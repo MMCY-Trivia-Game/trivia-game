@@ -33,7 +33,7 @@ const adminOnly = (req, res, next) => {
 };
 
 const creatorOrAdminOnly = (req, res, next) => {
-  if (req.user.role === 'creator' || req.user.role === 'admin') {
+  if (req?.user?.role === 'creator' || req?.user?.role === 'admin') {
     next();
   } else {
     res.status(403);

@@ -3,6 +3,7 @@ import HomeView from '@/views/creator/HomeView.vue';
 import SingleGameView from '@/views/creator/SingleGameView.vue';
 import CreateGameView from '@/views/creator/CreateGameView.vue';
 import LeaderboardView from '@/views/creator/LeaderboardView.vue';
+import RoundsView from '@/views/creator/RoundsView.vue';
 import GameLobbyView from '@/views/creator/GameLobbyView.vue';
 import GameStartView from '@/views/creator/GameStartView.vue';
 import GameReportView from '@/views/creator/GameReportView.vue';
@@ -21,24 +22,24 @@ const routes = [
       {
         path: 'dashboard',
         name: 'dashboard',
-        component: () => import('@/pages/admin/Dashboard.vue')
+        component: () => import('@/pages/admin/Dashboard.vue'),
       },
       {
         path: 'users',
         name: 'users',
-        component: () => import('@/pages/admin/Users.vue')
+        component: () => import('@/pages/admin/Users.vue'),
       },
       {
         path: 'games',
         name: 'games',
-        component: () => import('@/pages/admin/Games.vue')
+        component: () => import('@/pages/admin/Games.vue'),
       },
       {
         path: 'setting',
         name: 'setting',
-        component: () => import('@/pages/admin/Setting.vue')
-      }
-    ]
+        component: () => import('@/pages/admin/Setting.vue'),
+      },
+    ],
   },
   {
     path: '/creator',
@@ -66,22 +67,27 @@ const routes = [
     component: CreateGameView,
   },
   {
-    path: '/creator/game/leaderboard',
+    path: '/creator/game/:id/leaderboard',
     name: 'leaderboard',
     component: LeaderboardView,
   },
   {
-    path: '/creator/game/lobby',
+    path: '/creator/game/:id/rounds',
+    name: 'rounds',
+    component: RoundsView,
+  },
+  {
+    path: '/creator/game/:id/lobby',
     name: 'gameLobby',
     component: GameLobbyView,
   },
   {
-    path: '/creator/game/start',
+    path: '/creator/game/:id/start',
     name: 'gameStart',
     component: GameStartView,
   },
   {
-    path: '/creator/game/report',
+    path: '/creator/game/:id/report',
     name: 'gameReport',
     component: GameReportView,
   },
@@ -105,7 +111,7 @@ const routes = [
     name: 'Leaderboard',
     component: () => import('../components/leaderboard/Leaderboard.vue'),
   },
-]
+];
 
 const router = createRouter({
   history: createWebHistory(),

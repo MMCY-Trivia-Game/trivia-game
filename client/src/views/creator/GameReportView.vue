@@ -4,14 +4,19 @@ import { Bar } from "vue-chartjs";
 import QuestionWithoutAnswerCard from "@/components/creator/QuestionWithoutAnswerCard.vue";
 import AnswerAnalyticsWithGraph from "@/components/creator/AnswerAnalyticsWithGraph.vue";
 import router from "@/router/route";
+import { useQuestionsStore } from "@/stores/creator/questionsStore";
+import { useGamesStore } from "@/stores/creator/gamesStore";
 
-const currentQuestion = ref({
-  text: "What is the capital of France?",
-  options: ["Berlin", "Madrid", "Paris", "Rome"],
-  correctOption: 2,
-  answers: [2, 5, 8, 0],
-  noAnswer: 1,
-});
+const questionsStore = useQuestionsStore();
+const gamesStore = useGamesStore();
+
+// const currentQuestion = ref({
+//   text: "What is the capital of France?",
+//   options: ["Berlin", "Madrid", "Paris", "Rome"],
+//   correctOption: 2,
+//   answers: [2, 5, 8, 0],
+//   noAnswer: 1,
+// });
 
 const leaderboard = ref([
   { name: "Alice", score: 20 },
@@ -21,7 +26,8 @@ const leaderboard = ref([
 ]);
 
 const startNextQuestion = () => {
-  router.push("/creator/game/start");
+  questionsStore.incrementQuestionIndex();
+  router.push(`/creator/game/${gamesStore.selectedGame._id}/start`);
 };
 </script>
 
@@ -31,6 +37,14 @@ const startNextQuestion = () => {
       <header class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-white">Game Report</h1>
         <button
+          v-if="questionsStore.lastQuestion"
+          @click="startNextQuestion"
+          class="px-6 py-3 bg-secondary text-white font-bold rounded-lg shadow-md hover:bg-purple-950"
+        >
+          Last Question
+        </button>
+        <button
+          v-else
           @click="startNextQuestion"
           class="px-6 py-3 bg-secondary text-white font-bold rounded-lg shadow-md hover:bg-purple-950"
         >
@@ -38,7 +52,11 @@ const startNextQuestion = () => {
         </button>
       </header>
 
-      <QuestionWithoutAnswerCard :question="currentQuestion" />
+      <QuestionWithoutAnswerCard
+        :question="
+          questionsStore.questions[questionsStore.currentQuestionIndex]
+        "
+      />
 
       <AnswerAnalyticsWithGraph :question="currentQuestion" />
 
