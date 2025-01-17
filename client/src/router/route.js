@@ -12,6 +12,7 @@ import MyGamesView from '@/views/creator/MyGamesView.vue';
 import PlayerGame from '@/components/playerComponent/PlayerGame.vue';
 import Leaderboard from '@/components/leaderboard/Leaderboard.vue';
 import { useAuthStore } from '@/stores/auth/auth.js';
+import { useRoute } from 'vue-router'
 
 const routes = [
   {
@@ -28,6 +29,16 @@ const routes = [
     path: '/password-reset-sent',
     name: 'password-reset-sent',
     component: () => import('@/pages/auth/password-reset-sent.vue')
+  },
+  {
+    path: '/reset-password/:token',
+    name: 'reset-password',
+    component: () => import('@/pages/auth/reset-password.vue'),
+    beforeEnter: (to, from, next) => {
+      const userAuth = useAuthStore()
+      const token = to.params.token
+      console.log(token, 'before enter')
+    },
   },
   {
     path: '/admin',

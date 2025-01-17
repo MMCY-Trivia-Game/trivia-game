@@ -13,7 +13,8 @@ const {
   suspendUser,
   activateUser,
   sendResetPasswordToken,
-  resetPassword
+  resetPassword,
+  checkTokenValidity
 } = require('../controllers/userControllers');
 const { protect, adminOnly } = require('../middleware/authMiddleware');
 
@@ -46,5 +47,7 @@ router.put('/activate/:id', protect, adminOnly, activateUser);
 router.post('/send-reset-password-token', sendResetPasswordToken);
 
 router.post('/reset-password', resetPassword);
+
+router.post('/check-token-validity', checkTokenValidity)
 
 module.exports = router;

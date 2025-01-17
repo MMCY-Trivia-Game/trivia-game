@@ -7,6 +7,7 @@ export const useAuthStore = defineStore('auth', {
         user: localStorage.getItem('accessToken') ? jwtDecode(localStorage.getItem('accessToken')) : null,
         accessToken: localStorage.getItem('accessToken') || null,
         refreshToken: localStorage.getItem('refreshToken') || null,
+        message: null,
         isLoading: false,
         error: null,
     }),
@@ -140,5 +141,45 @@ export const useAuthStore = defineStore('auth', {
             }
             return this.error
         },
+
+        async forgetPassword(email) {
+            this.isLoading = true;
+            this.error = null;
+            try {
+                const response = await api.post('users/send-reset-password-token', email);
+                this.message = response?.data?.message
+            } catch (error) {
+                console.error('reset password error:', error);
+                this.error = error.response?.data?.message || 'reset password failed';
+            } finally {
+                this.isLoading = false;
+            }
+
+            if (!this.error) {
+                return true
+            }
+            return this.error
+        },
+
+        async checkPasswordTokenValidity(token) {
+            this.isLoading = true;
+            this.error = null;
+            try {
+                const response = await api.post('users/check-token-validity', {
+                    token: token
+                });
+                this.message = response?.data?.message
+            } catch (error) {
+                console.error('reset password error:', error);
+                this.error = error.response?.data?.message || 'reset password failed';
+            } finally {
+                this.isLoading = false;
+            }
+
+            if (!this.error) {
+                return true
+            }
+            return this.error
+        }
     }
 })

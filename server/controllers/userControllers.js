@@ -352,7 +352,7 @@ exports.sendResetPasswordToken = asyncHandler(async (req, res) => {
       from: process.env.SENDER_EMAIL,
       to: email,
       subject: 'Password Reset',
-      text: `Click the following link to reset your password: http://localhost:3000/users/reset-password/${token}`,
+      text: `Click the following link to reset your password: http://localhost:3000/reset-password/${token}`,
     };
 
     const info = await transporter.sendMail(mailOptions);
@@ -361,7 +361,7 @@ exports.sendResetPasswordToken = asyncHandler(async (req, res) => {
     res.status(200).json({ status: 'success', message: 'Email sent successfully' });
 
   } else {
-    res.status(404).send('Email not found');
+    res.status(404).json({ status: 'success', message: 'Email sent successfully' });
   }
 })
 
@@ -390,3 +390,25 @@ exports.resetPassword = asyncHandler(async (req, res) => {
 
 }
 );
+
+exports.checkTokenValidity = asyncHandler(async (req, res) => {
+  const { token } = req.body;
+
+  try {
+    const user = await User.findOne({ token });
+
+    if (!user) {
+      return res.status(404).json({ message: 'Invalid Token' });
+    }
+
+    const currentDate = new Date();
+    if (user.tokenExpiration < currentDate) {
+      return res.status(400).json({ message: 'Token has expired' });
+    }
+
+    res.status(200).json({ message: 'Token is valid' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+})
