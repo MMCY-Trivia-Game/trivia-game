@@ -12,12 +12,32 @@ import FinalGameReportView from '@/views/creator/FinalGameReportView.vue';
 import MyGamesView from '@/views/creator/MyGamesView.vue';
 import PlayerGame from '@/components/playerComponent/PlayerGame.vue';
 import Leaderboard from '@/components/leaderboard/Leaderboard.vue';
+import { useAuthStore } from '@/stores/auth/auth.js';
+
 const routes = [
+  {
+    path: '/',
+    name: 'login',
+    component: () => import('@/pages/auth/login.vue')
+  },
   {
     path: '/admin',
     name: 'adminLayout',
     redirect: 'admin/dashboard',
     component: () => import('@/layout/AdminLayout/AdminLayout.vue'),
+    beforeEnter: (to, from, next) => {
+      const userAuth = useAuthStore()
+      if (userAuth.accessToken) {
+        if (userAuth.user.role === 'admin') {
+          next();
+        } else {
+          next({ name: 'login', query: { redirect: to.fullPath } });
+        }
+      } else {
+        next({ name: 'login', query: { redirect: to.fullPath } });
+      }
+
+    },
     children: [
       {
         path: 'dashboard',

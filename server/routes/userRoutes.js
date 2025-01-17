@@ -7,6 +7,7 @@ const {
   getUserById,
   refreshToken,
   updateUserProfile,
+  updatePassword,
   promoteUserToAdmin,
   demoteUserToCreator,
   suspendUser,
@@ -29,6 +30,8 @@ router.post('/refresh-token', refreshToken);
 router.post('/logout', protect, logoutUser);
 
 router.put('/:id', protect, adminOnly, updateUserProfile);
+
+router.put('/update-password/:id', protect, updatePassword);
 
 router.put('/admin/:id', protect, adminOnly, promoteUserToAdmin);
 

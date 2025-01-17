@@ -1,42 +1,118 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
+const { check, validationResult } = require("express-validator");
+const asyncHandler = require("express-async-handler");
 const {
   generateAccessToken,
   generateRefreshToken,
 } = require('../utils/jwtUtils');
 
-exports.registerUser = async (req, res, next) => {
-  try {
-    const { first_name, last_name, email, password } = req.body;
-    const userExists = await User.findOne({ email });
+/**
+ * @des Register user
+ * @route POST /api/user/register
+ * @access Private
+ */
 
-    if (userExists) {
-      res.status(400);
-      throw new Error('User already exists');
+exports.registerUser = [
+  check("first_name")
+    .notEmpty()
+    .withMessage("firstName is required")
+    .isLength({ min: 3 })
+    .withMessage("firstName must be at least 3 characters long"),
+  check("last_name")
+    .notEmpty()
+    .withMessage("last_name is required")
+    .isLength({ min: 3 })
+    .withMessage("last_name must be at least 3 characters long"),
+  check("email").isEmail().withMessage("Please provide a valid email address"),
+  check("role").notEmpty().withMessage("Please provide a role of user"),
+  check('password')
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters long')
+    .matches(/\d/) // Ensure it contains at least one digit
+    .withMessage('Password must contain at least one number')
+    .matches(/[A-Z]/) // Ensure it contains at least one uppercase letter
+    .withMessage('Password must contain at least one uppercase letter')
+    .matches(/[a-z]/) // Ensure it contains at least one lowercase letter
+    .withMessage('Password must contain at least one lowercase letter')
+    .matches(/[\W_]/) // Ensure it contains at least one special character
+    .withMessage('Password must contain at least one special character'),
+  check('is_active')
+    .isBoolean(),
+
+  asyncHandler(async (req, res) => {
+    // Get validation result from request
+    const errors = validationResult(req);
+
+    // If there are validation errors
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
 
-    const user = await User.create({
-      first_name,
-      last_name,
-      email,
-      password,
-    });
+    // Extract validated data
+    const { first_name, last_name, email, role, password, is_active } = req.body;
 
-    res.status(201).json({ message: 'User registered successfully!', user });
-  } catch (error) {
-    next(error);
-  }
-};
+    //check if the user is available
+    const userAvailable = await User.findOne({ email });
+    if (userAvailable) {
+      res.status(400);
+      throw new Error("User already registered!");
+    }
 
-exports.loginUser = async (req, res, next) => {
-  try {
+    //save user
+    const user = await User.create({ first_name, last_name, email, role, password, is_active });
+
+    if (user) {
+      const userObj = user.toObject();
+      delete userObj.password
+      //return user info without passwords
+      res.status(201).json({
+        message: 'Registration successful!',
+        userObj
+      });
+    } else {
+      res.status(400);
+      throw new Error("user data is not valid!");
+    }
+  })
+]
+
+
+exports.loginUser = [
+  check("email").isEmail().withMessage("Please provide a valid email address"),
+  check('password')
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters long')
+    .matches(/\d/) // Ensure it contains at least one digit
+    .withMessage('Password must contain at least one number')
+    .matches(/[A-Z]/) // Ensure it contains at least one uppercase letter
+    .withMessage('Password must contain at least one uppercase letter')
+    .matches(/[a-z]/) // Ensure it contains at least one lowercase letter
+    .withMessage('Password must contain at least one lowercase letter')
+    .matches(/[\W_]/) // Ensure it contains at least one special character
+    .withMessage('Password must contain at least one special character'),
+
+  asyncHandler(async (req, res) => {
+    // Get validation result from request
+    const errors = validationResult(req);
+
+    // If there are validation errors
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const { email, password } = req.body;
     const user = await User.findOne({ email });
+
+
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      res.status(401);
-      throw new Error('Invalid email or password!');
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or password!'
+      });
     }
+
 
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
@@ -46,11 +122,11 @@ exports.loginUser = async (req, res, next) => {
       user,
       accessToken,
       refreshToken,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+    })
+  })
+]
+
+
 
 exports.logoutUser = async (req, res, next) => {
   try {
@@ -62,7 +138,31 @@ exports.logoutUser = async (req, res, next) => {
 
 exports.getAllUsers = async (req, res, next) => {
   try {
-    const users = await User.find().select('-password');
+    const { q } = req.query;
+    const options = {
+      page: req.query.page || 1,
+      limit: 10,
+      collation: {
+        locale: 'en',
+      },
+    };
+
+    let searchQuery = {};
+
+    if (q) {
+
+      searchQuery = {
+        $or: [
+          { first_name: { $regex: q, $options: 'i' } },
+          { last_name: { $regex: q, $options: 'i' } },
+          { email: { $regex: q, $options: 'i' } },
+          { role: { $regex: q, $options: 'i' } },
+        ],
+      };
+    }
+
+    const users = await User.paginate(searchQuery, options);
+
     res.json(users);
   } catch (error) {
     next(error);
@@ -87,10 +187,10 @@ exports.getUserById = async (req, res) => {
 
 exports.refreshToken = (req, res, next) => {
   try {
-    const { refreshToken } = req.body;
+    const refreshToken = req.body.refresh_token || req.query.refresh_token || req.headers['x-refresh-token'];
+
     if (!refreshToken) {
-      res.status(401);
-      return next(new Error('Refresh token is required!'));
+      return res.status(400).json({ message: 'Refresh token is required!' });
     }
 
     jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, user) => {
@@ -106,7 +206,7 @@ exports.refreshToken = (req, res, next) => {
   }
 };
 
-exports.updateUserProfile = async (req, res) => {
+exports.updateUserProfile = async (req, res, next) => {
   try {
     const { id } = req.params;
     const user = await User.findById(id);
@@ -116,8 +216,16 @@ exports.updateUserProfile = async (req, res) => {
       user.last_name = req.body.last_name || user.last_name;
       user.email = req.body.email || user.email;
 
-      if (req.body.password) {
-        user.password = req.body.password;
+      if (req.body.password || req.password) {
+        user.password = req.body.password || req.password;
+      }
+
+      if (req.body.role || req.role) {
+        user.role = req.body.role || req.role;
+      }
+
+      if (req.body.is_active || req.is_active) {
+        user.is_active = req.body.is_active || req.is_active;
       }
 
       const updatedUser = await user.save();
@@ -127,6 +235,8 @@ exports.updateUserProfile = async (req, res) => {
         first_name: updatedUser.first_name,
         last_name: updatedUser.last_name,
         email: updatedUser.email,
+        role: updatedUser.role,
+        is_active: updatedUser.is_active
       });
     } else {
       res.status(404);
@@ -136,6 +246,8 @@ exports.updateUserProfile = async (req, res) => {
     next(error);
   }
 };
+
+
 
 exports.promoteUserToAdmin = async (req, res) => {
   try {
@@ -192,6 +304,31 @@ exports.activateUser = async (req, res, next) => {
       throw new Error('User not found!');
     }
     res.json({ message: 'User activated successfully!', user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+exports.updatePassword = async (req, res, next) => {
+  const { oldPassword, newPassword } = req.body;
+  const { id } = req.params;
+
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Old password is incorrect' });
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    res.status(200).json({ message: 'Password updated successfully' });
   } catch (error) {
     next(error);
   }

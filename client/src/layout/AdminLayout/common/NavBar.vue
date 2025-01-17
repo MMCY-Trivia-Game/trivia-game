@@ -27,17 +27,18 @@
                                 class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
                                 aria-expanded="false" data-dropdown-toggle="dropdown-user">
                                 <span class="sr-only">Open user menu</span>
-                                <fwb-avatar initials="MM" rounded />
+                                <fwb-avatar class="uppercase"
+                                    :initials="`${authStore.user.first_name[0]}${authStore.user.last_name[0]}`" rounded />
                             </button>
                         </div>
                         <div class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600"
                             id="dropdown-user">
                             <div class="px-4 py-3" role="none">
                                 <p class="text-sm text-gray-900 dark:text-white" role="none">
-                                    Mikiyas Mebrate
+                                    {{ authStore.user.first_name }} {{ authStore.user.last_name }}
                                 </p>
                                 <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300" role="none">
-                                    mike@gmail.com
+                                    {{ authStore.user.email }}
                                 </p>
                             </div>
                             <ul class="py-1" role="none">
@@ -48,9 +49,10 @@
                                     </router-link>
                                 </li>
                                 <li>
-                                    <a href="#"
+                                    <router-link @click="authStore.logout" :to="{ name: 'login' }"
                                         class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                                        role="menuitem">Sign out</a>
+                                        role="menuitem">Logout
+                                    </router-link>
                                 </li>
                             </ul>
                         </div>
@@ -64,4 +66,8 @@
 <script setup>
 import logo from '@/assets/logo-highlight.png'
 import { FwbAvatar } from 'flowbite-vue'
+import { useAuthStore } from '@/stores/auth/auth.js';
+
+const authStore = useAuthStore()
+
 </script>
