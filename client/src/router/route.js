@@ -20,6 +20,16 @@ const routes = [
     component: () => import('@/pages/auth/login.vue')
   },
   {
+    path: '/forget-password',
+    name: 'forget-password',
+    component: () => import('@/pages/auth/forget-password.vue')
+  },
+  {
+    path: '/password-reset-sent',
+    name: 'password-reset-sent',
+    component: () => import('@/pages/auth/password-reset-sent.vue')
+  },
+  {
     path: '/admin',
     name: 'adminLayout',
     redirect: 'admin/dashboard',
