@@ -37,7 +37,7 @@
 
                         </div>
 
-                        <div class="text-end">
+                        <div class="text-end mb-3">
                             <router-link :to="{ name: 'login' }" class="text-sm mb-3 text-primary ">
                                 Back to Login
                             </router-link>
@@ -67,7 +67,6 @@ import { toTypedSchema } from '@vee-validate/zod'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth/auth.js';
 import * as z from 'zod'
-import { onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 
 
@@ -75,10 +74,10 @@ const router = useRouter();
 const route = useRoute()
 const authStore = useAuthStore()
 
-onMounted(async () => {
-    const response = await authStore.checkPasswordTokenValidity(route.params.token)
-    console.log(response, 'token')
-})
+// onMounted(async () => {
+//     const response = await authStore.checkPasswordTokenValidity(route.params.token)
+//     console.log(response, 'token')
+// })
 
 const validationSchema = toTypedSchema(
     z.object({
@@ -105,7 +104,14 @@ const { value: confirm_password } = useField('confirm_password')
 
 // Submit handler
 const onSubmit = handleSubmit(async (value) => {
-    console.log('new password', value)
+    const response = await authStore.resetPassword(route.params.token, value.password)
+
+    if (!response) {
+        authStore.error = 'An error occurred while changing the password. Please try again later.'
+    }
+
+    router.push('/')
+
 });
 
 </script>

@@ -385,7 +385,7 @@ exports.resetPassword = asyncHandler(async (req, res) => {
 
     res.status(200).json({ message: 'Password successfully updated' });
   } else {
-    res.status(404).send('Invalid token');
+    return res.status(404).json({ message: 'Invalid Token' });
   }
 
 }

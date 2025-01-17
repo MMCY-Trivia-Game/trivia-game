@@ -3,9 +3,10 @@ import 'vue3-toastify/dist/index.css';
 
 const notify = (message, type) => {
     toast(message, {
-        autoClose: 3000,
+        autoClose: 5000,
         "theme": "light",
         "type": type,
+        "position": 'top-center'
     });
 }
 

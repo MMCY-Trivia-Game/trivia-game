@@ -147,7 +147,6 @@ export const useAuthStore = defineStore('auth', {
             this.error = null;
             try {
                 const response = await api.post('users/send-reset-password-token', email);
-                this.message = response?.data?.message
             } catch (error) {
                 console.error('reset password error:', error);
                 this.error = error.response?.data?.message || 'reset password failed';
@@ -161,14 +160,19 @@ export const useAuthStore = defineStore('auth', {
             return this.error
         },
 
-        async checkPasswordTokenValidity(token) {
+        async resetPassword(token, password) {
             this.isLoading = true;
             this.error = null;
             try {
-                const response = await api.post('users/check-token-validity', {
-                    token: token
+                const response = await api.post('users/reset-password', {
+                    token: token,
+                    newPassword: password
                 });
-                this.message = response?.data?.message
+                if (response.status === 200) {
+                    this.message = 'Your password has been successfully updated!'
+                    return true
+                }
+                return false
             } catch (error) {
                 console.error('reset password error:', error);
                 this.error = error.response?.data?.message || 'reset password failed';
@@ -180,6 +184,29 @@ export const useAuthStore = defineStore('auth', {
                 return true
             }
             return this.error
+        },
+        async checkPasswordTokenValidity(token) {
+            this.isLoading = true;
+            this.error = null;
+            try {
+                const response = await api.post('users/check-token-validity', {
+                    token: token
+                });
+                if (response.status === 200) {
+                    return true
+                }
+                return false
+            } catch (error) {
+                console.error('reset password error:', error);
+                this.error = error.response?.data?.message || 'reset password failed';
+            } finally {
+                this.isLoading = false;
+            }
+
+            if (!this.error) {
+                return true
+            }
+            return false
         }
     }
 })

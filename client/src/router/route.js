@@ -14,6 +14,7 @@ import Leaderboard from '@/components/leaderboard/Leaderboard.vue';
 import { useAuthStore } from '@/stores/auth/auth.js';
 import { useRoute } from 'vue-router'
 
+
 const routes = [
   {
     path: '/',
@@ -34,10 +35,17 @@ const routes = [
     path: '/reset-password/:token',
     name: 'reset-password',
     component: () => import('@/pages/auth/reset-password.vue'),
-    beforeEnter: (to, from, next) => {
+    beforeEnter: async (to, from) => {
       const userAuth = useAuthStore()
       const token = to.params.token
-      console.log(token, 'before enter')
+
+      if (await userAuth.checkPasswordTokenValidity(token)) {
+        return true
+      }
+      userAuth.error = 'Invalid or expired token. Please request a new token to continue.'
+      return router.push('/')
+
+
     },
   },
   {

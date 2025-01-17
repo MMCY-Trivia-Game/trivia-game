@@ -78,6 +78,15 @@ const authStore = useAuthStore()
 const router = useRouter();
 
 onMounted(() => {
+    if (authStore.error) {
+        toast(authStore.error, 'error')
+        authStore.error = null
+    } else if (authStore.message) {
+        toast(authStore.message, 'succuss')
+        authStore.message = null
+    }
+
+
     if (authStore.isTokenValid()) {
         if (authStore.user.role === 'admin' && authStore.user.is_active) {
             router.push('/admin');
