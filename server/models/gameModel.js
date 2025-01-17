@@ -1,56 +1,71 @@
 const mongoose = require('mongoose');
 
 const gameSchema = new mongoose.Schema({
-    creator_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: [true, 'Creator ID is required!']
-    },
     title: {
         type: String,
-        required: [true, "Title is required!"],
-        minlength: [2, "Title must be at least 2 characters long!"],
-        maxlength: [50, "Title cannot exceed 50 characters!"]
-    },
-    category: {
-        type: String,
-        required: [true, "Category is required!"],
-        enum: [
-            'General Knowledge',
-            'Technology',
-            'History',
-            'Geography',
-            'Entertainment',
-            'Sports',
-            'Culture',
-            'Food and Drink',
-            'Mythology',
-            'Fun',
-            'Others'
-        ]
-    },
-    maxUsers: {
-        type: Number,
-        default: 2
+        required: true
     },
     game_code: {
-        type: Number,
-        required: [true, "Game code is required!"]
+        type: String,
+        required: true,
+        unique: true
     },
-    question_ids: {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: 'Question',
-        default: []
-    },
+    questions: [{
+        text: {
+            type: String,
+            required: true
+        },
+        options: [{
+            id: Number,
+            text: String
+        }],
+        correctOptionId: {
+            type: Number,
+            required: true
+        },
+        timeLimit: {
+            type: Number,
+            default: 30 // seconds
+        }
+    }],
     is_active: {
         type: Boolean,
-        default: true
+        default: false
     },
+    start_time: {
+        type: Date
+    },
+    end_time: {
+        type: Date
+    },
+    duration: {
+        type: Number // in seconds
+    },
+    creator: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    players: [{
+        id: String,
+        name: String,
+        score: {
+            type: Number,
+            default: 0
+        },
+        answers: [{
+            questionId: Number,
+            answerId: Number,
+            isCorrect: Boolean,
+            timeSpent: Number, // time taken to answer in seconds
+            score: Number
+        }],
+        totalTimeSpent: {
+            type: Number,
+            default: 0
+        }
+    }]
 }, {
-    timestamps: {
-        createdAt: 'createdAt',
-        updatedAt: 'updatedAt'
-    }
+    timestamps: true
 });
 
 module.exports = mongoose.model('Game', gameSchema);

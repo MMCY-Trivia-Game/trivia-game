@@ -125,6 +125,11 @@ const routes = [
     name: 'Leaderboard',
     component: () => import('../components/leaderboard/Leaderboard.vue'),
   },
+  {
+    path: '/test-game',
+    name: 'testGame',
+    component: () => import('@/components/TestGameFlow.vue')
+  },
 ]
 
 const router = createRouter({
