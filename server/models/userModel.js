@@ -37,6 +37,14 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, "Password is required!"]
     },
+    token: {
+        type: String,
+        default: null
+    },
+    tokenExpiration: {
+        type: Date,
+        default: null
+    },
 }, { timestamps: true });
 
 // Middleware to hash passwords

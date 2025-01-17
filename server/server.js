@@ -12,6 +12,7 @@ const userRoutes = require('./routes/userRoutes');
 const adminRoute = require('./routes/adminRoutes')
 
 
+
 connectDB(); // connect DB
 const app = express();
 const httpServer = createServer(app);
@@ -33,6 +34,7 @@ app.use('/api/questions', questionRoutes);
 app.use('/api/games', gameRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/dashboard', adminRoute)
+
 // Socket.IO connection for the leaderboard and realtime update
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
@@ -56,7 +58,9 @@ io.on('connection', (socket) => {
   });
 });
 
+
 const port = process.env.PORT || 5000;
 httpServer.listen(port, () => {
   console.log(`Server running on http://localhost:${port}/`);
 });
+
