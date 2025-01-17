@@ -356,12 +356,11 @@ exports.sendResetPasswordToken = asyncHandler(async (req, res) => {
     };
 
     const info = await transporter.sendMail(mailOptions);
-    console.log('Email sent:', info.response);
 
     res.status(200).json({ status: 'success', message: 'Email sent successfully' });
 
   } else {
-    res.status(404).json({ status: 'success', message: 'Email sent successfully' });
+    res.status(200).json({ status: 'success', message: 'Email sent successfully' });
   }
 })
 
