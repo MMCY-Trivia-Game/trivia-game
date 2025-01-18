@@ -349,13 +349,20 @@ exports.sendResetPasswordToken = asyncHandler(async (req, res) => {
     await user.save()
 
     const mailOptions = {
-      from: process.env.SENDER_EMAIL,
+      from: process.env.SMTP_USER,
       to: email,
       subject: 'Password Reset',
       text: `Click the following link to reset your password: http://localhost:3000/reset-password/${token}`,
     };
 
-    const info = await transporter.sendMail(mailOptions);
+
+
+
+    try {
+      const info = await transporter.sendMail(mailOptions);
+    } catch (error) {
+      console.log(error)
+    }
 
     res.status(200).json({ status: 'success', message: 'Email sent successfully' });
 
