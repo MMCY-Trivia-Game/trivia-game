@@ -15,40 +15,44 @@
             <!--logo end-->
 
             <div class="md:w-1/2 text-white">
-                <div>
+                <div class=" h-full ">
                     <h2 class="text-2xl font-semibold text-center mb-6">Login</h2>
                     <!-- Login Form -->
-                    <form @submit="onSubmit">
-                        <div class="mb-4">
-                            <!-- Email Input -->
-                            <fwb-input v-model="email" :validation-status="errors.email ? `error` : ``" type="email"
-                                label="Email" placeholder="Enter your Email" size="lg" />
-                            <p class="text-red-600 mb-5">{{ errors.email }}</p>
+                    <form @submit="onSubmit" class="flex flex-col justify-between ">
+                        <div class="w-100">
+                            <div class="mb-4">
+                                <!-- Email Input -->
+                                <fwb-input v-model="email" :validation-status="errors.email ? `error` : ``" type="email"
+                                    label="Email" placeholder="Enter your Email" size="lg" />
+                                <p class="text-red-600 mb-5">{{ errors.email }}</p>
 
-                            <!-- Password Input -->
-                            <fwb-input v-model="password" :validation-status="errors.password ? `error` : ``"
-                                type="password" name="password" label="Password" placeholder="Enter your Password"
-                                size="lg" />
+                                <!-- Password Input -->
+                                <fwb-input v-model="password" :validation-status="errors.password ? `error` : ``"
+                                    type="password" name="password" label="Password" placeholder="Enter your Password"
+                                    size="lg" />
 
-                            <p class="text-red-600">{{ errors.password }}</p>
+                                <p class="text-red-600">{{ errors.password }}</p>
 
+                            </div>
                         </div>
 
-                        <!-- <div class="flex justify-between items-center mb-4">
-                            <div>
-                                <input type="checkbox" id="remember" name="remember"
-                                    class="h-4 w-4 text-indigo-700 border-primary rounded" />
-                                <label for="remember" class="text-sm text-primary ps-2">Remember me</label>
-                            </div>
-                            <a href="#" class="text-sm text-primary ">Forgot password?</a>
-                        </div> -->
+                        <div class="w-100">
 
-                        <fwb-button :disabled="authStore.isLoading"
-                            class="w-full bg-primary hover:bg-secondary hover:text-white  text-white" color="alternative"
-                            type="submit" size="lg">
-                            <span v-if="!authStore.isLoading">Login</span>
-                            <div v-if="authStore.isLoading" class="flex justify-center"><fwb-spinner size="6" /></div>
-                        </fwb-button>
+                            <div class="flex justify-end items-center mb-4">
+                                <router-link :to="{ name: 'forget-password' }" class="text-sm text-primary ">Forgot
+                                    password?
+                                </router-link>
+                            </div>
+
+
+
+                            <fwb-button :disabled="authStore.isLoading"
+                                class="w-full bg-primary hover:bg-secondary hover:text-white  text-white"
+                                color="alternative" type="submit" size="lg">
+                                <span v-if="!authStore.isLoading">Login</span>
+                                <div v-if="authStore.isLoading" class="flex justify-center"><fwb-spinner size="6" /></div>
+                            </fwb-button>
+                        </div>
 
                     </form>
                 </div>
@@ -66,7 +70,6 @@ import { useAuthStore } from '@/stores/auth/auth.js';
 import { useField, useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { useRouter } from 'vue-router'
-import { ref } from "vue"
 import * as z from 'zod'
 import { onMounted } from 'vue';
 
@@ -75,6 +78,15 @@ const authStore = useAuthStore()
 const router = useRouter();
 
 onMounted(() => {
+    if (authStore.error) {
+        toast(authStore.error, 'error')
+        authStore.error = null
+    } else if (authStore.message) {
+        toast(authStore.message, 'succuss')
+        authStore.message = null
+    }
+
+
     if (authStore.isTokenValid()) {
         if (authStore.user.role === 'admin' && authStore.user.is_active) {
             router.push('/admin');

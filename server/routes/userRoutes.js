@@ -12,6 +12,9 @@ const {
   demoteUserToCreator,
   suspendUser,
   activateUser,
+  sendResetPasswordToken,
+  resetPassword,
+  checkTokenValidity
 } = require('../controllers/userControllers');
 const { protect, adminOnly } = require('../middleware/authMiddleware');
 
@@ -40,5 +43,11 @@ router.put('/creator/:id', protect, adminOnly, demoteUserToCreator);
 router.put('/suspend/:id', protect, adminOnly, suspendUser);
 
 router.put('/activate/:id', protect, adminOnly, activateUser);
+
+router.post('/send-reset-password-token', sendResetPasswordToken);
+
+router.post('/reset-password', resetPassword);
+
+router.post('/check-token-validity', checkTokenValidity)
 
 module.exports = router;

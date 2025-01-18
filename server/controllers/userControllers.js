@@ -1,12 +1,15 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
+const transporter = require('../config/mailer');
 const { check, validationResult } = require("express-validator");
 const asyncHandler = require("express-async-handler");
 const {
   generateAccessToken,
   generateRefreshToken,
 } = require('../utils/jwtUtils');
+const crypto = require('crypto');
+
 
 /**
  * @des Register user
@@ -125,7 +128,6 @@ exports.loginUser = [
     })
   })
 ]
-
 
 
 exports.logoutUser = async (req, res, next) => {
@@ -248,7 +250,6 @@ exports.updateUserProfile = async (req, res, next) => {
 };
 
 
-
 exports.promoteUserToAdmin = async (req, res) => {
   try {
     const { id } = req.params;
@@ -333,3 +334,87 @@ exports.updatePassword = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.sendResetPasswordToken = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email: email });
+
+  if (user) {
+    const token = crypto.randomBytes(20).toString('hex');
+    user.token = token
+    const tokenExpiration = new Date();
+    tokenExpiration.setHours(tokenExpiration.getHours() + 1); // Token expires in 1 hour
+
+    user.tokenExpiration = tokenExpiration;
+    await user.save()
+
+    const mailOptions = {
+      from: process.env.SMTP_USER,
+      to: email,
+      subject: 'Password Reset',
+      text: `Click the following link to reset your password: http://localhost:3000/reset-password/${token}`,
+    };
+
+
+
+
+    try {
+      const info = await transporter.sendMail(mailOptions);
+    } catch (error) {
+      console.log(error)
+    }
+
+    res.status(200).json({ status: 'success', message: 'Email sent successfully' });
+
+  } else {
+    res.status(200).json({ status: 'success', message: 'Email sent successfully' });
+  }
+})
+
+exports.resetPassword = asyncHandler(async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  const user = await User.findOne({ token });
+
+  if (user) {
+    // Check if the token has expired
+    const currentDate = new Date();
+    if (user.tokenExpiration < currentDate) {
+      return res.status(400).send('Token has expired');
+    }
+
+    // Update the user's password and clear the token
+    user.password = newPassword;
+    user.token = null;
+    user.tokenExpiration = null;
+    await user.save();
+
+    res.status(200).json({ message: 'Password successfully updated' });
+  } else {
+    return res.status(404).json({ message: 'Invalid Token' });
+  }
+
+}
+);
+
+exports.checkTokenValidity = asyncHandler(async (req, res) => {
+  const { token } = req.body;
+
+  try {
+    const user = await User.findOne({ token });
+
+    if (!user) {
+      return res.status(404).json({ message: 'Invalid Token' });
+    }
+
+    const currentDate = new Date();
+    if (user.tokenExpiration < currentDate) {
+      return res.status(400).json({ message: 'Token has expired' });
+    }
+
+    res.status(200).json({ message: 'Token is valid' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+})
