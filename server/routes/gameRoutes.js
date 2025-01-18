@@ -5,13 +5,13 @@ const {
   getGameById,
   getMyGames,
   getGamesByCategory,
-  getGamesByCreatorId,
-  updateGame,
   activateGame,
   deactivateGame,
   addQuestion,
   clearQuestions,
 } = require('../controllers/gameControllers');
+
+const { endGame } = require('../controllers/gameController');
 const {
   protect,
   creatorOnly,
@@ -47,5 +47,12 @@ router.put('/activate/:id', protect, creatorOrAdminOnly, activateGame);
 router.put('/questions/add/:id', protect, creatorOnly, addQuestion);
 
 router.put('/questions/clear/:id', protect, creatorOnly, clearQuestions);
+
+// Game routes
+router.post('/create', createGame);
+router.get('/active', getActiveGames);
+router.get('/:id', getGameById);
+router.put('/:id/activate', activateGame);
+router.put('/:id/end', endGame);
 
 module.exports = router;

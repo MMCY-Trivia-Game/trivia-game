@@ -1,43 +1,54 @@
 <template>
-  <div class="backdrop-blur-lg bg-white/30 dark:bg-black/30 rounded-3xl p-6 shadow-lg border border-white/50 dark:border-gray-700/50">
-    <h2 class="text-2xl font-semibold mb-6 text-center text-secondary dark:text-white">
-     what is the capital city of Ethiopia?
-    </h2>
-    
-    <div class="mb-8">
-      <div class="flex justify-between text-sm mb-2 text-secondary dark:text-white">
-        <span>Time Remaining</span>
-        <span>{{ timeLeft }}:00</span>
-      </div>
-      <div class="h-1 w-full bg-primary/20 dark:bg-white/20 rounded-full overflow-hidden">
+  <div class="bg-white/10 backdrop-blur-lg rounded-xl p-6 shadow-xl">
+    <!-- Question -->
+    <div class="mb-6">
+      <h2 class="text-2xl font-bold text-white mb-2">{{ question }}</h2>
+      <div class="w-full bg-white/20 rounded-full h-2">
         <div 
-          class="h-full bg-[#F14A00] animate-[timer_10s_linear_forwards]"
-          :style="{ width: `${(timeLeft/10)*100}%` }"
-        />
+          class="bg-highlight h-2 rounded-full transition-all duration-1000"
+          :style="{ width: `${(timeLeft / 30) * 100}%` }"
+        ></div>
       </div>
     </div>
 
-    <div class="space-y-4">
+    <!-- Options -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <button
-        v-for="(option, index) in options"
-        :key="index"
-        class="w-full p-4 rounded-xl bg-white/50 dark:bg-gray-800/50 hover:bg-white/70 dark:hover:bg-gray-700/70 transition-colors text-left focus:outline-none focus:ring-2 focus:ring-[#F14A00] text-secondary dark:text-white"
+        v-for="option in options"
+        :key="option.id"
+        @click="submitAnswer(option.id)"
+        class="bg-white/10 hover:bg-white/20 text-white p-4 rounded-lg transition-colors"
+        :disabled="!isConnected"
       >
-        <span class="font-semibold mr-2">{{ String.fromCharCode(65 + index) }}.</span> {{ option }}
+        {{ option.text }}
       </button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-
 defineProps({
+  question: {
+    type: String,
+    required: true
+  },
+  options: {
+    type: Array,
+    required: true
+  },
   timeLeft: {
     type: Number,
     required: true
+  },
+  isConnected: {
+    type: Boolean,
+    default: true
   }
-})
+});
 
-const options = ref(['Addis Ababa', 'Kenya', 'Italy', 'south Africa'])
+const emit = defineEmits(['submit-answer']);
+
+const submitAnswer = (optionId) => {
+  emit('submit-answer', optionId);
+};
 </script>
