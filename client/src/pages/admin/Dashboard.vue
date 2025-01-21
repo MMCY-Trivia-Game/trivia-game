@@ -119,7 +119,7 @@ const dashboards = computed(() => {
                     labels: {
                         rotate: -45
                     },
-                    categories: dashboardStore.stats?.topCategories?.map((item) => item._id),
+                    categories: dashboardStore.stats?.topCategories?.map((item) => item._id || 'None'),
                     tickPlacement: 'on'
                 },
                 yaxis: {
