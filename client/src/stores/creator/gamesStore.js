@@ -178,10 +178,18 @@ export const useGamesStore = defineStore('games', () => {
     }
   }
 
+  function creatorJoin() {
+    socket.emit('creatorJoin', selectedGame.value.game_code);
+    console.log('test creator joined');
+  }
+
   function listenForPlayersUpdates() {
     socket.on('playerJoined', (data) => {
+      console.log('Testing Player Joined');
       players.value = data.players;
       gameCode.value = data.gameCode;
+      console.log(players.value.map((p) => p));
+      console.log('Player Joined');
     });
 
     socket.on('playerLeft', (data) => {
@@ -216,6 +224,7 @@ export const useGamesStore = defineStore('games', () => {
     getGamesByCategory,
     createGame,
     startGame,
+    creatorJoin,
     listenForPlayersUpdates,
   };
 });

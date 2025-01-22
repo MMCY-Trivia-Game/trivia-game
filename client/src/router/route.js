@@ -12,41 +12,42 @@ import FinalGameReportView from '@/views/creator/FinalGameReportView.vue';
 import MyGamesView from '@/views/creator/MyGamesView.vue';
 import PlayerGame from '@/components/playerComponent/PlayerGame.vue';
 import Leaderboard from '@/components/leaderboard/Leaderboard.vue';
+import PlayerAnswerView from '@/views/creator/PlayerAnswerView.vue';
+import PlayerJoinView from '@/views/creator/PlayerJoinView.vue';
+import PlayerLobbyView from '../views/creator/PlayerLobbyView.vue';
 import { useAuthStore } from '@/stores/auth/auth.js';
-import { useRoute } from 'vue-router'
-
+import { useRoute } from 'vue-router';
 
 const routes = [
   {
     path: '/',
     name: 'login',
-    component: () => import('@/pages/auth/login.vue')
+    component: () => import('@/pages/auth/login.vue'),
   },
   {
     path: '/forget-password',
     name: 'forget-password',
-    component: () => import('@/pages/auth/forget-password.vue')
+    component: () => import('@/pages/auth/forget-password.vue'),
   },
   {
     path: '/password-reset-sent',
     name: 'password-reset-sent',
-    component: () => import('@/pages/auth/password-reset-sent.vue')
+    component: () => import('@/pages/auth/password-reset-sent.vue'),
   },
   {
     path: '/reset-password/:token',
     name: 'reset-password',
     component: () => import('@/pages/auth/reset-password.vue'),
     beforeEnter: async (to, from) => {
-      const userAuth = useAuthStore()
-      const token = to.params.token
+      const userAuth = useAuthStore();
+      const token = to.params.token;
 
       if (await userAuth.checkPasswordTokenValidity(token)) {
-        return true
+        return true;
       }
-      userAuth.error = 'Invalid or expired token. Please request a new token to continue.'
-      return router.push('/')
-
-
+      userAuth.error =
+        'Invalid or expired token. Please request a new token to continue.';
+      return router.push('/');
     },
   },
   {
@@ -55,7 +56,7 @@ const routes = [
     redirect: 'admin/dashboard',
     component: () => import('@/layout/AdminLayout/AdminLayout.vue'),
     beforeEnter: (to, from, next) => {
-      const userAuth = useAuthStore()
+      const userAuth = useAuthStore();
       if (userAuth.accessToken) {
         if (userAuth.user.role === 'admin') {
           next();
@@ -65,7 +66,6 @@ const routes = [
       } else {
         next({ name: 'login', query: { redirect: to.fullPath } });
       }
-
     },
     children: [
       {
@@ -144,6 +144,21 @@ const routes = [
     path: '/creator/game/report/final',
     name: 'finalGameReport',
     component: FinalGameReportView,
+  },
+  {
+    path: '/creator/game/player/test/join',
+    name: 'testingPlayerJoin',
+    component: PlayerJoinView,
+  },
+  {
+    path: '/game/:id/play',
+    name: 'testingPlayerAnswer',
+    component: PlayerAnswerView,
+  },
+  {
+    path: '/game/:id/lobby',
+    name: 'testingPlayerLobby',
+    component: PlayerLobbyView,
   },
   {
     path: '/games',

@@ -9,9 +9,7 @@ const questionRoutes = require('./routes/questionRoutes');
 const leaderboardRoutes = require('./routes/leaderboardRoutes');
 const gameRoutes = require('./routes/gameRoutes');
 const userRoutes = require('./routes/userRoutes');
-const adminRoute = require('./routes/adminRoutes')
-
-
+const adminRoute = require('./routes/adminRoutes');
 
 connectDB(); // connect DB
 const app = express();
@@ -33,33 +31,70 @@ app.use('/api/leaderboard', leaderboardRoutes);
 app.use('/api/questions', questionRoutes);
 app.use('/api/games', gameRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/dashboard', adminRoute)
+app.use('/api/dashboard', adminRoute);
 
+const gameRooms = {};
 // Socket.IO connection for the leaderboard and realtime update
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
 
-  const gameRooms = {};
+  socket.on('creatorJoin', async (gameCode) => {
+    if (!gameCode) {
+      socket.emit('error', 'Invalid gameCode or player data.');
+      return;
+    }
 
-  socket.on('joinGame', (gameCode, player) => {
-    console.log(`Player ${player.name} joined game ${gameCode}`);
     socket.join(gameCode);
+    console.log(`Creator joined game ${gameCode}`);
+    // console.log(await io.in(gameCode).fetchSockets());
+    console.log(socket.rooms);
 
     if (!gameRooms[gameCode]) {
       gameRooms[gameCode] = {
+        creatorId: socket.id,
         players: [],
         questionIndex: 0,
         leaderboard: [],
         answers: [],
       };
+      // console.log('if not');
+    }
+  });
+
+  socket.on('joinGame', async (gameCode, player) => {
+    if (!gameCode || !player || !player.name) {
+      socket.emit('error', 'Invalid gameCode or player data.');
+      return;
     }
 
-    gameRooms[gameCode].players.push({
-      ...player,
-      socketId: socket.id,
-      score: 0,
-    });
-    io.to(gameCode).emit('playerJoined', gameRooms[gameCode].players);
+    console.log(`Player ${player.name} joined game ${gameCode}`);
+    socket.join(gameCode);
+
+    if (!gameRooms[gameCode]) {
+      gameRooms[gameCode] = {
+        creatorId: null,
+        players: [],
+        questionIndex: 0,
+        leaderboard: [],
+        answers: [],
+      };
+      console.log('if not');
+    }
+    // console.log(gameRooms[gameCode]);
+
+    if (!gameRooms[gameCode].players.some((p) => p.socketId === socket.id)) {
+      gameRooms[gameCode].players.push({
+        player,
+        socketId: socket.id,
+        score: 0,
+      });
+      io.to(gameCode).emit('playerJoined', gameRooms[gameCode]);
+
+      // io.emit('playerJoined', gameRooms[gameCode]);
+      // console.log(gameRooms[gameCode]);
+      // console.log(await io.in(gameCode).fetchSockets());
+      console.log(socket.rooms);
+    }
   });
 
   socket.on('startGame', (gameCode) => {
@@ -116,9 +151,7 @@ io.on('connection', (socket) => {
   });
 });
 
-
 const port = process.env.PORT || 5000;
 httpServer.listen(port, () => {
   console.log(`Server running on http://localhost:${port}/`);
 });
-

@@ -11,8 +11,9 @@ const startGame = () => {
   gamesStore.startGame();
 };
 
-onMounted(() => {
-  gamesStore.getGameById(route.params.id);
+onMounted(async () => {
+  await gamesStore.getGameById(route.params.id);
+  gamesStore.creatorJoin();
   gamesStore.listenForPlayersUpdates();
 });
 </script>
@@ -68,7 +69,7 @@ onMounted(() => {
               class="flex items-center justify-center rounded-lg"
             >
               <div class="flex items-center space-x-4">
-                <p class="text-lg font-medium">{{ player.name }}</p>
+                <p class="text-lg font-medium">{{ player.player.name }}</p>
               </div>
             </li>
           </ul>
