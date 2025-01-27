@@ -51,7 +51,7 @@ export const useQuestionsStore = defineStore('questions', () => {
         game.question_ids.map(async (id) => {
           const response = await fetch(`${QUESTIONS_URL}/${id}`, {
             headers: {
-              Authorization: `Bearer ${userToken}`,
+              Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
             },
           });
           return response.json();
@@ -75,7 +75,7 @@ export const useQuestionsStore = defineStore('questions', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${userToken}`,
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
         body: JSON.stringify({
           text: question.text,

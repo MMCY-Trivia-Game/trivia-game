@@ -166,11 +166,6 @@ const routes = [
     component: () => import('../components/playerComponent/PlayerGame.vue'),
   },
   {
-    path: '/games',
-    name: 'PlayerGame',
-    component: () => import('@/components/playerComponent/PlayerGame.vue'),
-  },
-  {
     path: '/leaderboard',
     name: 'Leaderboard',
     component: () => import('../components/leaderboard/Leaderboard.vue'),
@@ -182,5 +177,24 @@ const router = createRouter({
   routes,
   linkActiveClass: 'text-primary',
 });
+
+router.beforeEach((to, from, next) => {
+
+  if (to.path.startsWith('/creator')) {
+    const userAuth = useAuthStore();
+    if (userAuth.accessToken) {
+      if (userAuth.user.role === 'creator') {
+        next();
+      } else {
+        next({ name: 'login', query: { redirect: to.fullPath } });
+      }
+    } else {
+      next({ name: 'login', query: { redirect: to.fullPath } });
+    }
+  } else {
+    next(); // Allow navigation for other routes
+  }
+});
+
 
 export default router;
