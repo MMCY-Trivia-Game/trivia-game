@@ -5,10 +5,9 @@ import { GAMES_URL } from '@/Constant';
 import router from '@/router/route';
 import { useQuestionsStore } from './questionsStore';
 
-// const userToken =
+// const localStorage.getItem('accessToken') =
 //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N2ZkMDY4NTBhOGE3YzQ5YmY1YzRhZCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTczNjc1NDM0MiwiZXhwIjoxNzM4MDUwMzQyfQ.u8_tWA-KEgOdSIeWz5cavw-5F3VgXP0E992kRq8-bg8';
-const userToken =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N2ZkMTI5NTBhOGE3YzQ5YmY1YzRiNiIsInJvbGUiOiJjcmVhdG9yIiwiaWF0IjoxNzM2ODQ3MDE5LCJleHAiOjE3MzgxNDMwMTl9.l2-9-HikJM2oDYZiIKdDOdRYJgygsyY1-l03ET8Z2k4';
+const userToken = localStorage.getItem('accessToken')
 
 const socket = io('http://localhost:5000');
 
@@ -46,7 +45,7 @@ export const useGamesStore = defineStore('games', () => {
       loading.value = true;
       const response = await fetch(`${GAMES_URL}`, {
         headers: {
-          Authorization: `Bearer ${userToken}`,
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
       });
       const data = await response.json();
@@ -64,7 +63,7 @@ export const useGamesStore = defineStore('games', () => {
       loading.value = true;
       const response = await fetch(`${GAMES_URL}/${gameId}`, {
         headers: {
-          Authorization: `Bearer ${userToken}`,
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
       });
       const data = await response.json();
@@ -85,7 +84,7 @@ export const useGamesStore = defineStore('games', () => {
       loading.value = true;
       const response = await fetch(`${GAMES_URL}/my`, {
         headers: {
-          Authorization: `Bearer ${userToken}`,
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
       });
 
@@ -103,7 +102,7 @@ export const useGamesStore = defineStore('games', () => {
       loading.value = true;
       const response = await fetch(`${GAMES_URL}/category/${category}`, {
         headers: {
-          Authorization: `Bearer ${userToken}`,
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
       });
       const data = await response.json();
@@ -123,7 +122,7 @@ export const useGamesStore = defineStore('games', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${userToken}`,
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
         body: JSON.stringify({
           title: game.title,
@@ -163,7 +162,7 @@ export const useGamesStore = defineStore('games', () => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${userToken}`,
+          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
         },
         body: JSON.stringify({
           question_id: questionId,
