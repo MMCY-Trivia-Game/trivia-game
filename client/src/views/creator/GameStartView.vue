@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch, computed } from "vue";
+import { ref, onMounted, watch, computed, onUnmounted } from "vue";
 import QuestionWithoutAnswerCard from "@/components/creator/QuestionWithoutAnswerCard.vue";
 import router from "@/router/route";
 import { useGamesStore } from "@/stores/creator/gamesStore";
@@ -38,8 +38,8 @@ const formattedTime = computed(() => {
 //   });
 // };
 
-watch(answeredPlayers, (newCount) => {
-  if (newCount === gameDetails.value.players.length && isQuestionActive.value) {
+watch(gamesStore.playerLength - gamesStore.notAnsCounts, (newCount) => {
+  if (newCount === gamesStore.playerLength && isQuestionActive.value) {
     endQuestion();
   }
 });
@@ -73,6 +73,7 @@ const startQuestion = () => {
 
 const endQuestion = () => {
   isQuestionActive.value = false;
+  gamesStore.getQuestionAnalysis();
   router.push(`/creator/game/${gamesStore.selectedGame._id}/report`);
 };
 
@@ -80,6 +81,10 @@ onMounted(async () => {
   const questions = await questionsStore.getQuestionsByGameId(route.params.id);
   startGameCountdown();
 });
+
+// onUnmounted(() => {
+//   gamesStore.getQuestionAnalysis();
+// });
 </script>
 
 <template>
@@ -117,16 +122,22 @@ onMounted(async () => {
         <div class="mt-8">
           <p class="text-lg font-semibold">Players Answered</p>
           <p class="text-4xl font-bold">
-            {{ answeredPlayers }} / {{ gamesStore.playerLength }}
+            {{
+              gamesStore.playerLength - gamesStore.notAnsCounts ==
+              gamesStore.playerLength
+                ? "0"
+                : gamesStore.playerLength - gamesStore.notAnsCounts
+            }}
+            / {{ gamesStore.playerLength }}
           </p>
 
-          <ul class="mt-4 space-y-2">
+          <!-- <ul class="mt-4 space-y-2">
             <li
-              v-for="player in gamesStore.selectedGame.players"
-              :key="player.name"
+              v-for="player in gamesStore.players"
+              :key="player.player.name"
               class="flex justify-between items-center bg-secondary px-4 py-3 rounded-lg"
             >
-              <p class="text-lg">{{ player.name }}</p>
+              <p class="text-lg">{{ player.player.name }}</p>
               <p
                 class="text-lg font-medium"
                 :class="player.answered ? 'text-green-500' : 'text-red-500'"
@@ -134,7 +145,7 @@ onMounted(async () => {
                 {{ player.answered ? "Answered" : "Not Answered" }}
               </p>
             </li>
-          </ul>
+          </ul> -->
         </div>
       </div>
     </div>

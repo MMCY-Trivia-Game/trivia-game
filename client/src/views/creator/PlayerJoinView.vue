@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { io } from "socket.io-client";
 import { useGamesStore } from "@/stores/creator/gamesStore";
@@ -11,15 +11,19 @@ const gamesStore = useGamesStore();
 const gameCode = ref("");
 const playerName = ref("");
 
-const joinGame = () => {
+const joinGame = async () => {
   if (gameCode.value && playerName.value) {
-    // router.push(`/game/${gameCode.value}/lobby`);
-    router.push(`/game/${gameCode.value}/play`);
-    socket.emit("joinGame", gameCode.value, { name: playerName.value });
+    gamesStore.joinGame(gameCode.value, { name: playerName.value });
+    router.push(`/game/${gameCode.value}/lobby`);
+    // router.push(`/game/${gameCode.value}/play`);
     // gamesStore.listenForPlayersUpdates();
     // console.log(gamesStore.players);
   }
 };
+
+onMounted(() => {
+  gamesStore.listenForPlayersUpdates();
+});
 </script>
 
 <template>

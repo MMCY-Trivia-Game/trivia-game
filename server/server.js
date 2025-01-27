@@ -34,6 +34,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/dashboard', adminRoute);
 
 const gameRooms = {};
+const BONUS_SCORES = [30, 20, 10];
 // Socket.IO connection for the leaderboard and realtime update
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
@@ -56,6 +57,7 @@ io.on('connection', (socket) => {
         questionIndex: 0,
         leaderboard: [],
         answers: [],
+        answersCount: {},
       };
       // console.log('if not');
     }
@@ -77,10 +79,10 @@ io.on('connection', (socket) => {
         questionIndex: 0,
         leaderboard: [],
         answers: [],
+        answersCount: {},
       };
       console.log('if not');
     }
-    // console.log(gameRooms[gameCode]);
 
     if (!gameRooms[gameCode].players.some((p) => p.socketId === socket.id)) {
       gameRooms[gameCode].players.push({
@@ -90,40 +92,104 @@ io.on('connection', (socket) => {
       });
       io.to(gameCode).emit('playerJoined', gameRooms[gameCode]);
 
-      // io.emit('playerJoined', gameRooms[gameCode]);
-      // console.log(gameRooms[gameCode]);
-      // console.log(await io.in(gameCode).fetchSockets());
       console.log(socket.rooms);
     }
   });
 
-  socket.on('startGame', (gameCode) => {
+  socket.on('startGame', (gameCode, id) => {
     console.log(`Game ${gameCode} started`);
-    io.to(gameCode).emit('gameStarted');
+
+    // const game = gameRooms[gameCode];
+
+    // game.answersCount = new Array(optionsLength).fill(0);
+    io.to(gameCode).emit('gameStarted', id);
+  });
+
+  socket.on('nextQuestion', (gameCode, optionsLength) => {
+    const game = gameRooms[gameCode];
+    game.questionIndex += 1;
+
+    game.answers = [];
+    game.answersCount = {};
+    // game.answersCount = new Array(optionsLength).fill(0);
+
+    io.to(gameCode).emit('nextQuestion', game.questionIndex);
+  });
+
+  socket.on('answerCountInitialization', (gameCode, optionsLength) => {
+    const game = gameRooms[gameCode];
+    // game.questionIndex += 1;
+
+    // game.answers = [];
+    // game.answersCount = new Array(optionsLength).fill(0);
+    console.log('Answer count initialized:', game.answersCount);
   });
 
   socket.on('leaderboardUpdate', (data) => {
     io.to(`game:${data.gameId}`).emit('leaderboard:update', data);
   });
 
-  socket.on('answerQuestion', ({ gameCode, playerId, userName, answer }) => {
-    const game = gameRooms[gameCode];
-    if (!game) return;
+  socket.on(
+    'answerQuestion',
+    ({ gameCode, playerId, answer, answeredCorrectly, index }) => {
+      const game = gameRooms[gameCode];
+      if (!game) return;
 
-    const player = game.players.find((p) => p.socketId === playerId);
-    if (!player) return;
+      const player = game.players.find((p) => p.socketId === playerId);
+      if (!player) {
+        console.log('Player not found');
+        return;
+      }
 
-    game.answers.push({ playerId, answer });
+      const answerLength = game.answers.length;
 
-    if (game.answers.length <= 3) {
-      const bonusPoints = [30, 20, 10];
-      player.score += bonusPoints[game.answers.length - 1];
+      console.log('Answered correctly:', answeredCorrectly);
+      if (answeredCorrectly) {
+        player.score += 10;
+
+        if (answerLength >= 0 && answerLength <= 2) {
+          player.score += BONUS_SCORES[answerLength];
+        }
+      }
+
+      game.answers.push({ playerId, answer, timestamp: Date.now() });
+
+      game.answers.sort((a, b) => a.timestamp - b.timestamp);
+
+      if (!game.answersCount[index]) {
+        game.answersCount[index] = 0;
+      }
+
+      game.answersCount[index] += 1;
+
+      const playersWhoDidNotAnswer = game.players.length - game.answers.length;
+
+      // if (game.answers.length <= 3) {
+      //   const bonusPoints = [30, 20, 10];
+      //   player.score += bonusPoints[game.answers.length - 1];
+      // }
+      // game.answers.forEach((answer, index) => {
+      //   const player = game.players.find((p) => p.socketId === answer.playerId);
+      //   if (player) {
+      //     player.score += 10; // Base score for answering
+      //     if (index < BONUS_SCORES.length) {
+      //       player.score += BONUS_SCORES[index]; // Add bonus score
+      //     }
+      //   }
+      // });
+
+      io.to(gameCode).emit(
+        'updateScores',
+        game.players,
+        game.answersCount,
+        playersWhoDidNotAnswer
+      );
+
+      // if (game.answers.length === game.players.length) {
+      //   emitQuestionResults(gameCode);
+      // }
     }
-
-    if (game.answers.length === game.players.length) {
-      emitQuestionResults(gameCode);
-    }
-  });
+  );
 
   const emitQuestionResults = (gameCode) => {
     const game = gameRooms[gameCode];
@@ -142,8 +208,8 @@ io.on('connection', (socket) => {
       leaderboard: game.players.sort((a, b) => b.score - a.score),
     });
 
-    game.answers = [];
-    game.questionIndex++;
+    // game.answers = [];
+    // game.questionIndex++;
   };
 
   socket.on('disconnect', () => {

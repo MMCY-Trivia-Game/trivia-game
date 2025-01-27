@@ -24,16 +24,26 @@ const props = defineProps({
   question: Object,
 });
 
+const generateLabels = () => {
+  const labels = props.question.answers.map((_, index) =>
+    String.fromCharCode(65 + index)
+  );
+  labels.push("No Answer");
+  return labels;
+};
+
 // Generate dynamic colors for the bars
 const generateBarColors = () => {
   const colors = props.question.answers.map((_, index) =>
-    index === props.question.correctOption ? "#28A745" : "#C62300"
+    index == props.question.correctOption ? "#28A745" : "#C62300"
   );
+  colors.push("#FF0000");
   return colors;
 };
 
 const chartData = ref({
-  labels: ["A", "B", "C", "D", "No Answer"],
+  // labels: ["A", "B", "C", "D", "No Answer"],
+  labels: generateLabels(),
   datasets: [
     {
       label: "Player Answers",

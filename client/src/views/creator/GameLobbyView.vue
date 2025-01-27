@@ -15,6 +15,7 @@ onMounted(async () => {
   await gamesStore.getGameById(route.params.id);
   gamesStore.creatorJoin();
   gamesStore.listenForPlayersUpdates();
+  gamesStore.listenForUpdateCreatorSide();
 });
 </script>
 

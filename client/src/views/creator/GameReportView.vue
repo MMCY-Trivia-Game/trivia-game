@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { Bar } from "vue-chartjs";
 import QuestionWithoutAnswerCard from "@/components/creator/QuestionWithoutAnswerCard.vue";
 import AnswerAnalyticsWithGraph from "@/components/creator/AnswerAnalyticsWithGraph.vue";
@@ -10,6 +10,7 @@ import { useGamesStore } from "@/stores/creator/gamesStore";
 const questionsStore = useQuestionsStore();
 const gamesStore = useGamesStore();
 
+const currentQuestion = ref({});
 // const currentQuestion = ref({
 //   text: "What is the capital of France?",
 //   options: ["Berlin", "Madrid", "Paris", "Rome"],
@@ -18,17 +19,23 @@ const gamesStore = useGamesStore();
 //   noAnswer: 1,
 // });
 
-const leaderboard = ref([
-  { name: "Alice", score: 20 },
-  { name: "Charlie", score: 10 },
-  { name: "Bob", score: 15 },
-  { name: "Daisy", score: 5 },
-]);
+// const leaderboard = ref([
+//   { name: "Alice", score: 20 },
+//   { name: "Charlie", score: 10 },
+//   { name: "Bob", score: 15 },
+//   { name: "Daisy", score: 5 },
+// ]);
 
 const startNextQuestion = () => {
-  questionsStore.incrementQuestionIndex();
-  router.push(`/creator/game/${gamesStore.selectedGame._id}/start`);
+  // questionsStore.incrementQuestionIndex();
+  gamesStore.nextQuestion();
+  // router.push(`/creator/game/${gamesStore.selectedGame._id}/start`);
 };
+
+onMounted(async () => {
+  // currentQuestion.value = gamesStore.getQuestionAnalysis();
+  // await gamesStore.getQuestionAnalysis();
+});
 </script>
 
 <template>
@@ -58,25 +65,25 @@ const startNextQuestion = () => {
         "
       />
 
-      <AnswerAnalyticsWithGraph :question="currentQuestion" />
+      <AnswerAnalyticsWithGraph :question="gamesStore.questionAnalysis" />
 
       <section>
         <h2 class="text-2xl font-semibold mb-4">Leaderboard</h2>
         <ul class="space-y-4">
           <li
-            v-for="(player, index) in leaderboard.sort(
+            v-for="player in gamesStore.players.sort(
               (a, b) => b.score - a.score
             )"
-            :key="index"
+            :key="player.socketId"
             class="flex justify-between items-center bg-secondary px-4 py-3 rounded-lg shadow-md"
           >
             <div class="flex items-center space-x-4">
               <div
                 class="w-10 h-10 flex items-center justify-center bg-primary text-white rounded-full text-lg font-bold"
               >
-                {{ player.name.charAt(0) }}
+                {{ player.player.name.charAt(0) }}
               </div>
-              <p class="text-lg font-medium">{{ player.name }}</p>
+              <p class="text-lg font-medium">{{ player.player.name }}</p>
             </div>
             <p class="text-lg font-bold">{{ player.score }} pts</p>
           </li>

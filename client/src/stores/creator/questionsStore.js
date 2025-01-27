@@ -24,6 +24,17 @@ export const useQuestionsStore = defineStore('questions', () => {
     }
   }
 
+  function setQuestionIndex(index) {
+    currentQuestionIndex.value = index;
+    if (currentQuestionIndex.value === questions.value.length - 2) {
+      lastQuestion.value = true;
+    }
+  }
+
+  function isAnswerCorrect(index) {
+    return questions.value[currentQuestionIndex.value].correctOptionId == index;
+  }
+
   async function getQuestionsByGameId(gameId) {
     try {
       loading.value = true;
@@ -89,6 +100,8 @@ export const useQuestionsStore = defineStore('questions', () => {
     loading,
     error,
     incrementQuestionIndex,
+    setQuestionIndex,
+    isAnswerCorrect,
     getQuestionsByGameId,
     createQuestion,
   };

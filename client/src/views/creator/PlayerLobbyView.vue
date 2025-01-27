@@ -4,9 +4,11 @@ import { onMounted, ref } from "vue";
 
 const players = ref([]);
 
+const gamesStore = useGamesStore();
+
 onMounted(() => {
-  const gamesStore = useGamesStore();
   gamesStore.listenForPlayersUpdates();
+  gamesStore.listenForUpdatePlayerSide();
   players.value = gamesStore.players;
 });
 </script>
@@ -15,7 +17,7 @@ onMounted(() => {
   <div class="bg-gray-600">
     <div class="text-center">
       <p class="text-lg font-semibold">Players Joined</p>
-      <p class="text-4xl font-bold">{{ players.length }}</p>
+      <p class="text-4xl font-bold">{{ gamesStore.players.length }}</p>
     </div>
     <section class="mt-8">
       <h2 class="text-2xl font-semibold mb-4">List of Players</h2>
@@ -23,7 +25,7 @@ onMounted(() => {
         class="space-y-4 bg-secondary rounded-lg px-6 py-5 overflow-y-auto max-h-96"
       >
         <li
-          v-for="player in players"
+          v-for="player in gamesStore.players"
           :key="player.name"
           class="flex items-center justify-center rounded-lg"
         >

@@ -17,6 +17,9 @@ export const useGamesStore = defineStore('games', () => {
   const games = ref([]);
   const gamesByCategory = ref([]);
   const selectedGame = ref({});
+  const ansCounts = ref({});
+  const notAnsCounts = ref(0);
+  const questionAnalysis = ref({});
   const categories = ref([
     'General Knowledge',
     'Technology',
@@ -171,16 +174,83 @@ export const useGamesStore = defineStore('games', () => {
     }
   }
 
+  function joinGame(gameCode, playerName) {
+    socket.emit('joinGame', gameCode, playerName);
+  }
+
   function startGame() {
     if (!gameCode.value) {
-      socket.emit('joinGame', selectedGame.value.game_code, { name: 'Kaleab' });
-      socket.emit('startGame', selectedGame.value.game_code);
+      // socket.emit(
+      //   'startGame',
+      //   selectedGame.value.game_code,
+      //   selectedGame.value._id,
+      //   questionsStore.questions[questionsStore.currentQuestionIndex].option
+      //     .length
+      // );
+      socket.emit(
+        'startGame',
+        selectedGame.value.game_code,
+        selectedGame.value._id
+      );
     }
+  }
+
+  function getQuestionAnalysis() {
+    const question =
+      questionsStore.questions[questionsStore.currentQuestionIndex];
+    const answers = new Array(question.option.length).fill(0);
+    Object.keys(ansCounts.value).forEach((key) => {
+      answers[key] = ansCounts.value[key];
+    });
+
+    // return {
+    //   text: question.text,
+    //   options: question.option,
+    //   correctOption: question.correct_option,
+    //   answers,
+    //   noAnswer: notAnsCounts,
+    // };
+    questionAnalysis.value = {
+      text: question.text,
+      options: question.option,
+      correctOption: question.correctOptionId,
+      answers: answers,
+      noAnswer: notAnsCounts,
+    };
+    console.log(questionAnalysis.value);
   }
 
   function creatorJoin() {
     socket.emit('creatorJoin', selectedGame.value.game_code);
     console.log('test creator joined');
+  }
+
+  function nextQuestion() {
+    socket.emit(
+      'nextQuestion',
+      selectedGame.value.game_code,
+      questionsStore.questions[questionsStore.currentQuestionIndex + 1].option
+        .length
+    );
+  }
+
+  function answerQuestion(answer, index) {
+    socket.emit('answerQuestion', {
+      gameCode: selectedGame.value.game_code,
+      playerId: socket.id,
+      answer,
+      answeredCorrectly: questionsStore.isAnswerCorrect(index),
+      index,
+    });
+  }
+
+  function answerCountInitialization() {
+    socket.emit(
+      'answerCountInitialization',
+      selectedGame.value.game_code,
+      questionsStore.questions[questionsStore.currentQuestionIndex + 1].option
+        .length
+    );
   }
 
   function listenForPlayersUpdates() {
@@ -197,13 +267,50 @@ export const useGamesStore = defineStore('games', () => {
       console.log(`Player left: ${data.player.name}`);
     });
 
-    socket.on('gameStarted', () => {
-      gameStarted.value = true;
-      router.push(`/creator/game/${selectedGame.value._id}/start`);
-    });
-
     socket.on('disconnect', () => {
       console.log(`Player disconnected: ${socket.id}`);
+    });
+
+    socket.on(
+      'updateScores',
+      (updatedPlayers, answersCount, playersWhoDidNotAnswer) => {
+        players.value = updatedPlayers;
+        ansCounts.value = answersCount;
+        notAnsCounts.value = playersWhoDidNotAnswer;
+        console.log('testing update scores');
+        console.log(players.value);
+      }
+    );
+  }
+
+  function listenForUpdateCreatorSide() {
+    socket.on('gameStarted', (id) => {
+      gameStarted.value = true;
+      router.push(`/creator/game/${selectedGame.value._id}/start`);
+
+      // answerCountInitialization();
+    });
+
+    socket.on('nextQuestion', (index) => {
+      questionsStore.incrementQuestionIndex();
+      router.push(`/creator/game/${selectedGame.value._id}/start`);
+    });
+  }
+
+  function listenForUpdatePlayerSide() {
+    socket.on('gameStarted', (id) => {
+      gameStarted.value = true;
+      getGameById(id).then(() => {
+        questionsStore.getQuestionsByGameId(id);
+        router.push(`/game/${selectedGame.value._id}/play`);
+      });
+
+      // answerCountInitialization();
+    });
+
+    socket.on('nextQuestion', (index) => {
+      questionsStore.incrementQuestionIndex();
+      router.push(`/game/${selectedGame.value._id}/play`);
     });
   }
 
@@ -211,6 +318,9 @@ export const useGamesStore = defineStore('games', () => {
     games,
     gamesByCategory,
     selectedGame,
+    ansCounts,
+    notAnsCounts,
+    questionAnalysis,
     categories,
     loading,
     error,
@@ -222,9 +332,15 @@ export const useGamesStore = defineStore('games', () => {
     getGameById,
     getMyGames,
     getGamesByCategory,
+    getQuestionAnalysis,
     createGame,
+    joinGame,
     startGame,
     creatorJoin,
+    nextQuestion,
+    answerQuestion,
     listenForPlayersUpdates,
+    listenForUpdateCreatorSide,
+    listenForUpdatePlayerSide,
   };
 });
