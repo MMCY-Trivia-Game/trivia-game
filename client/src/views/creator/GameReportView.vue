@@ -10,6 +10,8 @@ import { useGamesStore } from "@/stores/creator/gamesStore";
 const questionsStore = useQuestionsStore();
 const gamesStore = useGamesStore();
 
+const lastQuestion = ref(false);
+
 const currentQuestion = ref({});
 // const currentQuestion = ref({
 //   text: "What is the capital of France?",
@@ -26,8 +28,16 @@ const currentQuestion = ref({});
 //   { name: "Daisy", score: 5 },
 // ]);
 
+const endGame = () => {
+  gamesStore.endGame();
+  router.push(`/creator/game/${gamesStore.selectedGame._id}/report/final`);
+};
+
 const startNextQuestion = () => {
   // questionsStore.incrementQuestionIndex();
+  // if(lastQuestion.value) {
+  //   router.push(`/creator/game/${gamesStore.selectedGame._id}/start`);
+  // }
   gamesStore.nextQuestion();
   // router.push(`/creator/game/${gamesStore.selectedGame._id}/start`);
 };
@@ -43,19 +53,28 @@ onMounted(async () => {
     <div class="max-w-screen-xl mx-auto p-6">
       <header class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-white">Game Report</h1>
-        <button
-          v-if="questionsStore.lastQuestion"
-          @click="startNextQuestion"
-          class="px-6 py-3 bg-secondary text-white font-bold rounded-lg shadow-md hover:bg-purple-950"
-        >
-          Last Question
-        </button>
+        <div v-if="!gamesStore.gameEnded">
+          <button
+            v-if="questionsStore.lastQuestion"
+            @click="startNextQuestion"
+            class="px-6 py-3 bg-secondary text-white font-bold rounded-lg shadow-md hover:bg-purple-950"
+          >
+            Last Question
+          </button>
+          <button
+            v-else
+            @click="startNextQuestion"
+            class="px-6 py-3 bg-secondary text-white font-bold rounded-lg shadow-md hover:bg-purple-950"
+          >
+            Next Question
+          </button>
+        </div>
         <button
           v-else
-          @click="startNextQuestion"
+          @click="endGame"
           class="px-6 py-3 bg-secondary text-white font-bold rounded-lg shadow-md hover:bg-purple-950"
         >
-          Next Question
+          End Game
         </button>
       </header>
 

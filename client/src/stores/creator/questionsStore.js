@@ -19,6 +19,9 @@ export const useQuestionsStore = defineStore('questions', () => {
 
   function incrementQuestionIndex() {
     currentQuestionIndex.value++;
+    if (lastQuestion.value) {
+      gamesStore.toggleGameEnded();
+    }
     if (currentQuestionIndex.value === questions.value.length - 2) {
       lastQuestion.value = true;
     }

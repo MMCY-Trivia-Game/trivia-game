@@ -4,6 +4,7 @@ import { io } from 'socket.io-client';
 import { GAMES_URL } from '@/Constant';
 import router from '@/router/route';
 import { useQuestionsStore } from './questionsStore';
+import { useLeaderboardStore } from './leaderboardStore';
 
 // const userToken =
 //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N2ZkMDY4NTBhOGE3YzQ5YmY1YzRhZCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTczNjc1NDM0MiwiZXhwIjoxNzM4MDUwMzQyfQ.u8_tWA-KEgOdSIeWz5cavw-5F3VgXP0E992kRq8-bg8';
@@ -14,11 +15,13 @@ const socket = io('http://localhost:5000');
 
 export const useGamesStore = defineStore('games', () => {
   const questionsStore = useQuestionsStore();
+  const leaderboardStore = useLeaderboardStore();
   const games = ref([]);
   const gamesByCategory = ref([]);
   const selectedGame = ref({});
   const ansCounts = ref({});
   const notAnsCounts = ref(0);
+  const answeredPlayers = ref(0);
   const questionAnalysis = ref({});
   const categories = ref([
     'General Knowledge',
@@ -38,8 +41,21 @@ export const useGamesStore = defineStore('games', () => {
   const players = ref([]);
   const gameCode = ref(null);
   const gameStarted = ref(false);
+  const gameEnded = ref(true);
 
   const playerLength = computed(() => players.value.length);
+
+  function toggleGameEnded() {
+    gameEnded.value = !gameEnded.value;
+  }
+
+  function resetAnsweredPlayers() {
+    answeredPlayers.value = 0;
+  }
+
+  function incrementAnsweredPlayers() {
+    answeredPlayers.value += 1;
+  }
 
   async function getGames() {
     try {
@@ -180,19 +196,18 @@ export const useGamesStore = defineStore('games', () => {
 
   function startGame() {
     if (!gameCode.value) {
-      // socket.emit(
-      //   'startGame',
-      //   selectedGame.value.game_code,
-      //   selectedGame.value._id,
-      //   questionsStore.questions[questionsStore.currentQuestionIndex].option
-      //     .length
-      // );
       socket.emit(
         'startGame',
         selectedGame.value.game_code,
         selectedGame.value._id
       );
     }
+  }
+
+  function endGame() {
+    leaderboardStore.formatAndRankPlayers(players.value);
+    leaderboardStore.createLeaderboard();
+    router.push(`/creator/game/${selectedGame.value._id}/report/final`);
   }
 
   function getQuestionAnalysis() {
@@ -203,13 +218,6 @@ export const useGamesStore = defineStore('games', () => {
       answers[key] = ansCounts.value[key];
     });
 
-    // return {
-    //   text: question.text,
-    //   options: question.option,
-    //   correctOption: question.correct_option,
-    //   answers,
-    //   noAnswer: notAnsCounts,
-    // };
     questionAnalysis.value = {
       text: question.text,
       options: question.option,
@@ -232,6 +240,7 @@ export const useGamesStore = defineStore('games', () => {
       questionsStore.questions[questionsStore.currentQuestionIndex + 1].option
         .length
     );
+    resetAnsweredPlayers();
   }
 
   function answerQuestion(answer, index) {
@@ -242,16 +251,18 @@ export const useGamesStore = defineStore('games', () => {
       answeredCorrectly: questionsStore.isAnswerCorrect(index),
       index,
     });
+
+    // incrementAnsweredPlayers();
   }
 
-  function answerCountInitialization() {
-    socket.emit(
-      'answerCountInitialization',
-      selectedGame.value.game_code,
-      questionsStore.questions[questionsStore.currentQuestionIndex + 1].option
-        .length
-    );
-  }
+  // function answerCountInitialization() {
+  //   socket.emit(
+  //     'answerCountInitialization',
+  //     selectedGame.value.game_code,
+  //     questionsStore.questions[questionsStore.currentQuestionIndex + 1].option
+  //       .length
+  //   );
+  // }
 
   function listenForPlayersUpdates() {
     socket.on('playerJoined', (data) => {
@@ -277,6 +288,7 @@ export const useGamesStore = defineStore('games', () => {
         players.value = updatedPlayers;
         ansCounts.value = answersCount;
         notAnsCounts.value = playersWhoDidNotAnswer;
+        incrementAnsweredPlayers();
         console.log('testing update scores');
         console.log(players.value);
       }
@@ -286,9 +298,8 @@ export const useGamesStore = defineStore('games', () => {
   function listenForUpdateCreatorSide() {
     socket.on('gameStarted', (id) => {
       gameStarted.value = true;
+      gameEnded.value = false;
       router.push(`/creator/game/${selectedGame.value._id}/start`);
-
-      // answerCountInitialization();
     });
 
     socket.on('nextQuestion', (index) => {
@@ -300,12 +311,11 @@ export const useGamesStore = defineStore('games', () => {
   function listenForUpdatePlayerSide() {
     socket.on('gameStarted', (id) => {
       gameStarted.value = true;
+      gameEnded.value = false;
       getGameById(id).then(() => {
         questionsStore.getQuestionsByGameId(id);
         router.push(`/game/${selectedGame.value._id}/play`);
       });
-
-      // answerCountInitialization();
     });
 
     socket.on('nextQuestion', (index) => {
@@ -320,6 +330,7 @@ export const useGamesStore = defineStore('games', () => {
     selectedGame,
     ansCounts,
     notAnsCounts,
+    answeredPlayers,
     questionAnalysis,
     categories,
     loading,
@@ -327,7 +338,11 @@ export const useGamesStore = defineStore('games', () => {
     players,
     gameCode,
     gameStarted,
+    gameEnded,
     playerLength,
+    toggleGameEnded,
+    resetAnsweredPlayers,
+    incrementAnsweredPlayers,
     getGames,
     getGameById,
     getMyGames,
@@ -336,6 +351,7 @@ export const useGamesStore = defineStore('games', () => {
     createGame,
     joinGame,
     startGame,
+    endGame,
     creatorJoin,
     nextQuestion,
     answerQuestion,

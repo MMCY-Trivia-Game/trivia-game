@@ -1,8 +1,11 @@
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
 import NavBar from "@/components/creator/NavBar.vue";
 import Leaderboard from "@/components/creator/Leaderboard.vue";
+import { useLeaderboardStore } from "@/stores/creator/leaderboardStore";
+
+const leaderboardStore = useLeaderboardStore();
 
 const players = ref([
   { name: "Sam Black", score: 1500, rank: 2 },
@@ -26,7 +29,7 @@ const sortedPlayers = ref(players.value.sort((a, b) => a.rank - b.rank));
     <div class="min-h-screen bg-primary text-white">
       <NavBar />
       <div class="max-w-screen-md mx-auto p-6">
-        <Leaderboard :sortedPlayers="sortedPlayers" />
+        <Leaderboard :sortedPlayers="leaderboardStore.formattedPlayers" />
       </div>
     </div>
     <RouterLink

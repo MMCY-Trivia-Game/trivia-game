@@ -141,7 +141,7 @@ const routes = [
     component: GameReportView,
   },
   {
-    path: '/creator/game/report/final',
+    path: '/creator/game/:id/report/final',
     name: 'finalGameReport',
     component: FinalGameReportView,
   },

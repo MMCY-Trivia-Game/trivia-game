@@ -12,6 +12,7 @@ const gamesStore = useGamesStore();
 
 const answerQuestion = (option, index) => {
   gamesStore.answerQuestion(option, index);
+  gamesStore.incrementAnsweredPlayers();
 };
 </script>
 

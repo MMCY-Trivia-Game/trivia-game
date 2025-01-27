@@ -38,8 +38,8 @@ const formattedTime = computed(() => {
 //   });
 // };
 
-watch(gamesStore.playerLength - gamesStore.notAnsCounts, (newCount) => {
-  if (newCount === gamesStore.playerLength && isQuestionActive.value) {
+watch(gamesStore.answeredPlayers, (newCount) => {
+  if (newCount >= gamesStore.playerLength || isQuestionActive.value) {
     endQuestion();
   }
 });
@@ -122,12 +122,13 @@ onMounted(async () => {
         <div class="mt-8">
           <p class="text-lg font-semibold">Players Answered</p>
           <p class="text-4xl font-bold">
-            {{
+            <!-- {{
               gamesStore.playerLength - gamesStore.notAnsCounts ==
               gamesStore.playerLength
                 ? "0"
                 : gamesStore.playerLength - gamesStore.notAnsCounts
-            }}
+            }} -->
+            {{ gamesStore.answeredPlayers }}
             / {{ gamesStore.playerLength }}
           </p>
 
