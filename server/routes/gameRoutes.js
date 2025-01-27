@@ -1,8 +1,51 @@
 const express = require('express');
-const router = express.Router();
-const { createGame, getGames } = require('../controllers/gameController');
+const {
+  createGame,
+  getAllGames,
+  getGameById,
+  getMyGames,
+  getGamesByCategory,
+  getGamesByCreatorId,
+  updateGame,
+  activateGame,
+  deactivateGame,
+  addQuestion,
+  clearQuestions,
+} = require('../controllers/gameControllers');
+const {
+  protect,
+  creatorOnly,
+  adminOnly,
+  creatorOrAdminOnly,
+} = require('../middleware/authMiddleware');
 
-router.post('/', createGame);
-router.get('/', getGames);
+const router = express.Router();
+
+router.get('/', protect, adminOnly, getAllGames);
+
+router.get('/my', protect, creatorOnly, getMyGames);
+
+router.get('/:id', protect, creatorOrAdminOnly, getGameById);
+
+router.get(
+  '/category/:category',
+  protect,
+  creatorOrAdminOnly,
+  getGamesByCategory
+);
+
+router.get('/creator/:id', protect, creatorOrAdminOnly, getGamesByCreatorId);
+
+router.post('/', protect, creatorOnly, createGame);
+
+router.put('/:id', protect, creatorOnly, updateGame);
+
+router.put('/deactivate/:id', protect, creatorOrAdminOnly, deactivateGame);
+
+router.put('/activate/:id', protect, creatorOrAdminOnly, activateGame);
+
+router.put('/questions/add/:id', protect, creatorOnly, addQuestion);
+
+router.put('/questions/clear/:id', protect, creatorOnly, clearQuestions);
 
 module.exports = router;

@@ -1,0 +1,226 @@
+const Game = require('../models/gameModel');
+const mongoose = require('mongoose');
+
+const generateGameCode = async () => {
+  let code;
+  let exists = true;
+  while (exists) {
+    code = Math.floor(100000 + Math.random() * 900000).toString();
+    exists = await Game.exists({ game_code: code });
+  }
+  return code;
+};
+
+exports.createGame = async (req, res, next) => {
+  try {
+    const { title, maxUsers, category } = req.body;
+
+    const game_code = await generateGameCode();
+
+    const game = await Game.create({
+      creator_id: req.user.id,
+      title,
+      category,
+      maxUsers,
+      category,
+      game_code,
+    });
+    res.status(201).json({ message: 'Game created successfully!', game });
+    console.log('second in the game controller');
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getAllGames = async (req, res, next) => {
+  try {
+    const { is_active, category, q } = req.query;
+
+    const filter = {};
+    if (category) {
+      filter.category = category;
+    }
+
+    if (is_active) {
+      filter.is_active = is_active;
+    }
+
+    let searchQuery = {};
+
+    if (q) {
+      searchQuery = {
+        $or: [
+          { title: { $regex: q, $options: 'i' } },
+          { category: { $regex: q, $options: 'i' } },
+        ],
+      };
+    }
+
+    const games = await Game.find({ ...searchQuery, ...filter }).populate(
+      'creator_id',
+      'first_name last_name email'
+    );
+    res.json(games);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getGameById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400);
+      throw new Error('Invalid game ID format.');
+    }
+
+    const game = await Game.findById(id).populate(
+      'creator_id',
+      'first_name last_name'
+    );
+    if (!game) {
+      res.status(404);
+      throw new Error('Game not found!');
+    }
+    res.json({ game });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getMyGames = async (req, res, next) => {
+  try {
+    const creator_id = req.user.id;
+    const games = await Game.find({
+      creator_id,
+    }).populate('creator_id', 'first_name last_name');
+
+    if (!games) {
+      res.status(404);
+      throw new Error('Games not found!');
+    }
+
+    res.json(games);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getGamesByCategory = async (req, res, next) => {
+  try {
+    const { category } = req.params;
+    const games = await Game.find({ category }).populate(
+      'creator_id',
+      'first_name last_name'
+    );
+    if (!games) {
+      res.status(404);
+      throw new Error('Game not found!');
+    }
+    res.json(games);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getGamesByCreatorId = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const games = await Game.find({ creator_id: id });
+    if (!games) {
+      res.status(404);
+      throw new Error('Game not found!');
+    }
+    res.json({ games });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.updateGame = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const game = await Game.findByIdAndUpdate(id, req.body, { new: true });
+    if (!game) {
+      res.status(404);
+      throw new Error('Game not found!');
+    }
+    res.json({ message: 'Game updated successfully!', game });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.activateGame = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const game = await Game.findByIdAndUpdate(
+      id,
+      { is_active: true },
+      { new: true }
+    );
+    if (!game) {
+      res.status(404); // Not Found
+      throw new Error('Game not found!');
+    }
+    res.json({ message: 'Game activated successfully!', game });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.deactivateGame = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const game = await Game.findByIdAndUpdate(
+      id,
+      { is_active: false },
+      { new: true }
+    );
+    if (!game) {
+      res.status(404);
+      throw new Error('Game not found!');
+    }
+    res.json({ message: 'Game deactivated successfully!', game });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.addQuestion = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { question_id } = req.body;
+    const game = await Game.findByIdAndUpdate(
+      id,
+      { $push: { question_ids: question_id } },
+      { new: true }
+    );
+    if (!game) {
+      res.status(404);
+      throw new Error('Game not found!');
+    }
+    res.json({ message: 'Question added successfully!', game });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.clearQuestions = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const game = await Game.findByIdAndUpdate(
+      id,
+      { $set: { question_ids: [] } },
+      { new: true }
+    );
+    if (!game) {
+      res.status(404);
+      throw new Error('Game not found!');
+    }
+    res.json({ message: 'Questions cleared successfully!', game });
+  } catch (error) {
+    next(error);
+  }
+};

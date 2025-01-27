@@ -12,7 +12,14 @@ const jwt = require('jsonwebtoken');
  * @returns {string} JWT access token.
  */
 const generateAccessToken = (user) => {
-    return jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
+    return jwt.sign({
+        id: user._id,
+        role: user.role,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        is_active: user.is_active
+    }, process.env.JWT_SECRET, {
         expiresIn: '15m',
     });
 };

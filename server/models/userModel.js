@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 const userSchema = new mongoose.Schema({
     first_name: {
@@ -36,6 +37,14 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, "Password is required!"]
     },
+    token: {
+        type: String,
+        default: null
+    },
+    tokenExpiration: {
+        type: Date,
+        default: null
+    },
 }, { timestamps: true });
 
 // Middleware to hash passwords
@@ -45,5 +54,7 @@ userSchema.pre('save', async function (next) {
     }
     next();
 });
+
+userSchema.plugin(mongoosePaginate);
 
 module.exports = mongoose.model("User", userSchema);
