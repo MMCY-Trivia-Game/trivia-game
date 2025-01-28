@@ -146,7 +146,7 @@ const routes = [
     component: FinalGameReportView,
   },
   {
-    path: '/creator/game/player/test/join',
+    path: '/creator/game/player/join',
     name: 'testingPlayerJoin',
     component: PlayerJoinView,
   },
