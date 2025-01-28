@@ -1,4 +1,5 @@
 require('dotenv').config();
+// const path = require('path');
 const express = require('express');
 const connectDB = require('./config/dbConnection');
 const errorHandler = require('./middleware/errorHandler');
@@ -216,6 +217,22 @@ io.on('connection', (socket) => {
     console.log('Client disconnected:', socket.id);
   });
 });
+
+// if (process.env.NODE_ENV && process.env.NODE_ENV === 'production') {
+//   const __dirname = path.resolve();
+//   // app.use('/uploads', express.static('/var/data/uploads'));
+//   app.use(express.static(path.join(__dirname, '/client/build')));
+
+//   app.get('*', (req, res) =>
+//     res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'))
+//   );
+// } else {
+//   // const __dirname = path.resolve();
+//   // app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+//   // app.get('/', (req, res) => {
+//   //   res.send('API is running....');
+//   // });
+// }
 
 const port = process.env.PORT || 5000;
 httpServer.listen(port, () => {
