@@ -1,6 +1,5 @@
 <script setup>
 import { computed, onMounted, ref } from "vue";
-import { Bar } from "vue-chartjs";
 import QuestionWithoutAnswerCard from "@/components/creator/QuestionWithoutAnswerCard.vue";
 import AnswerAnalyticsWithGraph from "@/components/creator/AnswerAnalyticsWithGraph.vue";
 import router from "@/router/route";

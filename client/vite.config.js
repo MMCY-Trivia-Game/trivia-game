@@ -17,8 +17,5 @@ export default defineConfig({
       external: ['vue-chartjs'],
     },
   },
-  optimizeDeps: {
-    include: ['vue-chartjs'],
-  },
   plugins: [vue()],
 });
