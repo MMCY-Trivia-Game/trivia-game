@@ -106,6 +106,14 @@ io.on('connection', (socket) => {
     io.to(gameCode).emit('gameStarted', id);
   });
 
+  socket.on('endGame', (gameCode) => {
+    if (gameRooms[gameCode]) {
+      delete gameRooms[gameCode];
+      io.to(gameCode).emit('gameEnded');
+    }
+    console.log(gameRooms);
+  });
+
   socket.on('nextQuestion', (gameCode, optionsLength) => {
     const game = gameRooms[gameCode];
     game.questionIndex += 1;

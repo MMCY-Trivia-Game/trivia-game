@@ -2,6 +2,7 @@ import { LEADERBOARD_URL } from '@/Constant';
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { useGamesStore } from '../creator/gamesStore';
+import router from '@/router/route';
 
 const userToken =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N2ZkMDY4NTBhOGE3YzQ5YmY1YzRhZCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTczNjc1NDM0MiwiZXhwIjoxNzM4MDUwMzQyfQ.u8_tWA-KEgOdSIeWz5cavw-5F3VgXP0E992kRq8-bg8';
@@ -67,16 +68,20 @@ export const useLeaderboardStore = defineStore('Leaderboard', () => {
     try {
       const game_id = gamesStore.selectedGame._id;
       await getLeaderboards(game_id);
-      const round = roundsList.value[roundsList.length - 1] + 1;
+      let round = 1;
+      if (roundsList.value.length > 0) {
+        round = roundsList.value[roundsList.value.length - 1] + 1;
+      }
 
       // console.log(selectedGame.value);
       // console.log(data);
 
       const leaderboard = await Promise.all(
         lead.map(async (l) => {
+          console.log(l);
           const il = await createIndividualRecord({
             game_id,
-            user_name: l.player.name,
+            user_name: l.user_name,
             round,
             score: l.score,
             rank: l.rank,
@@ -86,7 +91,7 @@ export const useLeaderboardStore = defineStore('Leaderboard', () => {
         })
       );
 
-      router.push(`/creator/game/${newGame._id}`);
+      // router.push(`/creator`);
 
       // console.log(data.game);
     } catch (err) {
@@ -100,7 +105,8 @@ export const useLeaderboardStore = defineStore('Leaderboard', () => {
   async function createIndividualRecord(lead) {
     try {
       // loading.value = true;
-      const response = await fetch(`${LEADERBOARD_URL}/`, {
+      console.log(lead);
+      const response = await fetch(`${LEADERBOARD_URL}/leaderboard/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

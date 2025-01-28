@@ -113,6 +113,26 @@ exports.handleReconnect = async (req, res) => {
   }
 };
 
+exports.createLeaderboard = async (req, res) => {
+  try {
+    const { game_id, user_name, round, score, rank } = req.body;
+
+    const leaderboard = await Leaderboard.create({
+      game_id,
+      user_name,
+      round,
+      score,
+      rank,
+    });
+
+    res
+      .status(201)
+      .json({ message: 'Game created successfully!', leaderboard });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Helper Function
 async function updateRanks(gameId) {
   const entries = await Leaderboard.find({ game_id: gameId }).sort({

@@ -19,17 +19,20 @@ export const useQuestionsStore = defineStore('questions', () => {
 
   function incrementQuestionIndex() {
     currentQuestionIndex.value++;
-    if (lastQuestion.value) {
+    if (
+      lastQuestion.value ||
+      currentQuestionIndex.value >= questions.value.length - 1
+    ) {
       gamesStore.toggleGameEnded();
     }
-    if (currentQuestionIndex.value === questions.value.length - 2) {
+    if (currentQuestionIndex.value >= questions.value.length - 2) {
       lastQuestion.value = true;
     }
   }
 
   function setQuestionIndex(index) {
     currentQuestionIndex.value = index;
-    if (currentQuestionIndex.value === questions.value.length - 2) {
+    if (currentQuestionIndex.value >= questions.value.length - 2) {
       lastQuestion.value = true;
     }
   }

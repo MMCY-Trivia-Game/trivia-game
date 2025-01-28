@@ -8,7 +8,7 @@ import { useLeaderboardStore } from './leaderboardStore';
 
 // const localStorage.getItem('accessToken') =
 //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N2ZkMDY4NTBhOGE3YzQ5YmY1YzRhZCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTczNjc1NDM0MiwiZXhwIjoxNzM4MDUwMzQyfQ.u8_tWA-KEgOdSIeWz5cavw-5F3VgXP0E992kRq8-bg8';
-const userToken = localStorage.getItem('accessToken')
+const userToken = localStorage.getItem('accessToken');
 
 const socket = io('http://localhost:5000');
 
@@ -207,6 +207,7 @@ export const useGamesStore = defineStore('games', () => {
     leaderboardStore.formatAndRankPlayers(players.value);
     leaderboardStore.createLeaderboard();
     router.push(`/creator/game/${selectedGame.value._id}/report/final`);
+    socket.emit('endGame', selectedGame.value.game_code);
   }
 
   function getQuestionAnalysis() {
@@ -292,6 +293,13 @@ export const useGamesStore = defineStore('games', () => {
         console.log(players.value);
       }
     );
+
+    socket.on('gameEnded', () => {
+      players.value = [];
+      ansCounts.value = {};
+      notAnsCounts.value = 0;
+      answeredPlayers.value = 0;
+    });
   }
 
   function listenForUpdateCreatorSide() {
