@@ -15,6 +15,7 @@ import Leaderboard from '@/components/leaderboard/Leaderboard.vue';
 import PlayerAnswerView from '@/views/creator/PlayerAnswerView.vue';
 import PlayerJoinView from '@/views/creator/PlayerJoinView.vue';
 import PlayerLobbyView from '../views/creator/PlayerLobbyView.vue';
+import PlayerReportView from '@/views/creator/PlayerReportView.vue';
 import { useAuthStore } from '@/stores/auth/auth.js';
 import { useRoute } from 'vue-router';
 
@@ -146,7 +147,7 @@ const routes = [
     component: FinalGameReportView,
   },
   {
-    path: '/creator/game/player/test/join',
+    path: '/game/player/test/join',
     name: 'testingPlayerJoin',
     component: PlayerJoinView,
   },
@@ -159,6 +160,11 @@ const routes = [
     path: '/game/:id/lobby',
     name: 'testingPlayerLobby',
     component: PlayerLobbyView,
+  },
+  {
+    path: '/game/:id/report',
+    name: 'PlayerReport',
+    component: PlayerReportView,
   },
   {
     path: '/games',
@@ -179,7 +185,6 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-
   if (to.path.startsWith('/creator')) {
     const userAuth = useAuthStore();
     if (userAuth.accessToken) {
@@ -195,6 +200,5 @@ router.beforeEach((to, from, next) => {
     next(); // Allow navigation for other routes
   }
 });
-
 
 export default router;

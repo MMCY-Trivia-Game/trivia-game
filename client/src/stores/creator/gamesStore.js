@@ -8,9 +8,11 @@ import { useLeaderboardStore } from './leaderboardStore';
 
 // const localStorage.getItem('accessToken') =
 //   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N2ZkMDY4NTBhOGE3YzQ5YmY1YzRhZCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTczNjc1NDM0MiwiZXhwIjoxNzM4MDUwMzQyfQ.u8_tWA-KEgOdSIeWz5cavw-5F3VgXP0E992kRq8-bg8';
-const userToken = localStorage.getItem('accessToken');
+const userToken = localStorage.getItem('accessToken')
+  ? localStorage.getItem('accessToken')
+  : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N2ZkMTVhNTBhOGE3YzQ5YmY1YzRiYyIsInJvbGUiOiJjcmVhdG9yIiwiZmlyc3RfbmFtZSI6IkZyYW5rIiwibGFzdF9uYW1lIjoiVGF5bG9yIiwiZW1haWwiOiJmcmFuay50YXlsb3JAY3JlYXRvci5jb20iLCJpc19hY3RpdmUiOmZhbHNlLCJpYXQiOjE3MzgwNjYzNjYsImV4cCI6MTczOTM2MjM2Nn0.T8lx4npo6-1NKSB7sKJEO662B66cHBA7GEpBdux_56E';
 
-const socket = io('http://localhost:5000');
+const socket = io('http://192.168.8.210:5000');
 
 export const useGamesStore = defineStore('games', () => {
   const questionsStore = useQuestionsStore();
@@ -61,7 +63,11 @@ export const useGamesStore = defineStore('games', () => {
       loading.value = true;
       const response = await fetch(`${GAMES_URL}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          Authorization: `Bearer ${
+            localStorage.getItem('accessToken')
+              ? localStorage.getItem('accessToken')
+              : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N2ZkMTVhNTBhOGE3YzQ5YmY1YzRiYyIsInJvbGUiOiJjcmVhdG9yIiwiZmlyc3RfbmFtZSI6IkZyYW5rIiwibGFzdF9uYW1lIjoiVGF5bG9yIiwiZW1haWwiOiJmcmFuay50YXlsb3JAY3JlYXRvci5jb20iLCJpc19hY3RpdmUiOmZhbHNlLCJpYXQiOjE3MzgwNjYzNjYsImV4cCI6MTczOTM2MjM2Nn0.T8lx4npo6-1NKSB7sKJEO662B66cHBA7GEpBdux_56E'
+          }`,
         },
       });
       const data = await response.json();
@@ -79,7 +85,11 @@ export const useGamesStore = defineStore('games', () => {
       loading.value = true;
       const response = await fetch(`${GAMES_URL}/${gameId}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          Authorization: `Bearer ${
+            localStorage.getItem('accessToken')
+              ? localStorage.getItem('accessToken')
+              : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N2ZkMTVhNTBhOGE3YzQ5YmY1YzRiYyIsInJvbGUiOiJjcmVhdG9yIiwiZmlyc3RfbmFtZSI6IkZyYW5rIiwibGFzdF9uYW1lIjoiVGF5bG9yIiwiZW1haWwiOiJmcmFuay50YXlsb3JAY3JlYXRvci5jb20iLCJpc19hY3RpdmUiOmZhbHNlLCJpYXQiOjE3MzgwNjYzNjYsImV4cCI6MTczOTM2MjM2Nn0.T8lx4npo6-1NKSB7sKJEO662B66cHBA7GEpBdux_56E'
+          }`,
         },
       });
       const data = await response.json();
@@ -100,7 +110,11 @@ export const useGamesStore = defineStore('games', () => {
       loading.value = true;
       const response = await fetch(`${GAMES_URL}/my`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          Authorization: `Bearer ${
+            localStorage.getItem('accessToken')
+              ? localStorage.getItem('accessToken')
+              : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N2ZkMTVhNTBhOGE3YzQ5YmY1YzRiYyIsInJvbGUiOiJjcmVhdG9yIiwiZmlyc3RfbmFtZSI6IkZyYW5rIiwibGFzdF9uYW1lIjoiVGF5bG9yIiwiZW1haWwiOiJmcmFuay50YXlsb3JAY3JlYXRvci5jb20iLCJpc19hY3RpdmUiOmZhbHNlLCJpYXQiOjE3MzgwNjYzNjYsImV4cCI6MTczOTM2MjM2Nn0.T8lx4npo6-1NKSB7sKJEO662B66cHBA7GEpBdux_56E'
+          }`,
         },
       });
 
@@ -118,7 +132,11 @@ export const useGamesStore = defineStore('games', () => {
       loading.value = true;
       const response = await fetch(`${GAMES_URL}/category/${category}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          Authorization: `Bearer ${
+            localStorage.getItem('accessToken')
+              ? localStorage.getItem('accessToken')
+              : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N2ZkMTVhNTBhOGE3YzQ5YmY1YzRiYyIsInJvbGUiOiJjcmVhdG9yIiwiZmlyc3RfbmFtZSI6IkZyYW5rIiwibGFzdF9uYW1lIjoiVGF5bG9yIiwiZW1haWwiOiJmcmFuay50YXlsb3JAY3JlYXRvci5jb20iLCJpc19hY3RpdmUiOmZhbHNlLCJpYXQiOjE3MzgwNjYzNjYsImV4cCI6MTczOTM2MjM2Nn0.T8lx4npo6-1NKSB7sKJEO662B66cHBA7GEpBdux_56E'
+          }`,
         },
       });
       const data = await response.json();
@@ -138,7 +156,11 @@ export const useGamesStore = defineStore('games', () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          Authorization: `Bearer ${
+            localStorage.getItem('accessToken')
+              ? localStorage.getItem('accessToken')
+              : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N2ZkMTVhNTBhOGE3YzQ5YmY1YzRiYyIsInJvbGUiOiJjcmVhdG9yIiwiZmlyc3RfbmFtZSI6IkZyYW5rIiwibGFzdF9uYW1lIjoiVGF5bG9yIiwiZW1haWwiOiJmcmFuay50YXlsb3JAY3JlYXRvci5jb20iLCJpc19hY3RpdmUiOmZhbHNlLCJpYXQiOjE3MzgwNjYzNjYsImV4cCI6MTczOTM2MjM2Nn0.T8lx4npo6-1NKSB7sKJEO662B66cHBA7GEpBdux_56E'
+          }`,
         },
         body: JSON.stringify({
           title: game.title,
@@ -178,7 +200,11 @@ export const useGamesStore = defineStore('games', () => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
+          Authorization: `Bearer ${
+            localStorage.getItem('accessToken')
+              ? localStorage.getItem('accessToken')
+              : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3N2ZkMTVhNTBhOGE3YzQ5YmY1YzRiYyIsInJvbGUiOiJjcmVhdG9yIiwiZmlyc3RfbmFtZSI6IkZyYW5rIiwibGFzdF9uYW1lIjoiVGF5bG9yIiwiZW1haWwiOiJmcmFuay50YXlsb3JAY3JlYXRvci5jb20iLCJpc19hY3RpdmUiOmZhbHNlLCJpYXQiOjE3MzgwNjYzNjYsImV4cCI6MTczOTM2MjM2Nn0.T8lx4npo6-1NKSB7sKJEO662B66cHBA7GEpBdux_56E'
+          }`,
         },
         body: JSON.stringify({
           question_id: questionId,

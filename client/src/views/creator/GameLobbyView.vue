@@ -44,7 +44,7 @@ onMounted(async () => {
           <div class="bg-secondary rounded-lg shadow-lg">
             <div class="bg-white p-2 rounded-lg shadow-lg">
               <QRCodeVue
-                :value="`http://localhost:3000/${gamesStore.selectedGame.game_code}`"
+                :value="`http://192.168.8.210:3000/game/player/test/join`"
                 size="150"
                 fgColor="#ffffff"
                 bgColor="#2A004E"

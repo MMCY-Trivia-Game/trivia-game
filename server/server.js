@@ -17,7 +17,7 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:3000',
+    origin: '*',
     methods: ['GET', 'POST'],
   },
 });
@@ -243,6 +243,6 @@ if (process.env.NODE_ENV && process.env.NODE_ENV === 'production') {
 }
 
 const port = process.env.PORT || 5000;
-httpServer.listen(port, () => {
+httpServer.listen(port, '0.0.0.0', () => {
   console.log(`Server running on http://localhost:${port}/`);
 });
