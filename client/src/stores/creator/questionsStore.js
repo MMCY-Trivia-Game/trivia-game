@@ -32,10 +32,23 @@ export const useQuestionsStore = defineStore('questions', () => {
 
   function setQuestionIndex(index) {
     currentQuestionIndex.value = index;
+    if (
+      lastQuestion.value ||
+      currentQuestionIndex.value >= questions.value.length - 1
+    ) {
+      gamesStore.toggleGameEnded();
+    }
     if (currentQuestionIndex.value >= questions.value.length - 2) {
       lastQuestion.value = true;
     }
   }
+
+  // function setQuestionIndex(index) {
+  //   currentQuestionIndex.value = index;
+  //   if (currentQuestionIndex.value >= questions.value.length - 2) {
+  //     lastQuestion.value = true;
+  //   }
+  // }
 
   function isAnswerCorrect(index) {
     return questions.value[currentQuestionIndex.value].correctOptionId == index;

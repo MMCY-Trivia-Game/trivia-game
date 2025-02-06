@@ -325,6 +325,7 @@ export const useGamesStore = defineStore('games', () => {
       ansCounts.value = {};
       notAnsCounts.value = 0;
       answeredPlayers.value = 0;
+      questionsStore.setQuestionIndex(0);
     });
   }
 
@@ -336,7 +337,8 @@ export const useGamesStore = defineStore('games', () => {
     });
 
     socket.on('nextQuestion', (index) => {
-      questionsStore.incrementQuestionIndex();
+      // questionsStore.incrementQuestionIndex();
+      questionsStore.setQuestionIndex(index);
       router.push(`/creator/game/${selectedGame.value._id}/start`);
     });
   }
@@ -352,7 +354,8 @@ export const useGamesStore = defineStore('games', () => {
     });
 
     socket.on('nextQuestion', (index) => {
-      questionsStore.incrementQuestionIndex();
+      // questionsStore.incrementQuestionIndex();
+      questionsStore.setQuestionIndex(index);
       router.push(`/game/${selectedGame.value._id}/play`);
     });
   }
